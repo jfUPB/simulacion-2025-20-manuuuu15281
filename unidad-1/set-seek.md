@@ -55,6 +55,9 @@ Cuando hablamos de arte generativo, no buscamos crear una obra específica, sino
 
 **Explicación:** esto sucedió porque las probabilidades de irse a y-- son mayores ya que le corresponden más números que al resto de condicionales. 
 
+### Actividad 4
+
+
 
 
 
