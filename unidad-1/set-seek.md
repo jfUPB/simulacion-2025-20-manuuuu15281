@@ -14,6 +14,47 @@ Cuando hablamos de arte generativo, no buscamos crear una obra específica, sino
 ### Actividad 3: Investigación 
 
 
-**Hipótesis:** Lo que decidí modificar es el rango del número random, ahora será 7 y  no adicionaré if´s y lo que creo que va a suceder es que el movimiento va a tender a moverse hacia abajo (y--) porque saldrán más números que se vayan al "else" y esto hará que se vayan hacia abajo.
+**Hipótesis 1:** Lo que decidí modificar es el rango del número random, ahora será 7 y  no adicionaré if´s y lo que creo que va a suceder es que el movimiento va a tender a moverse hacia abajo (y--) porque saldrán más números que se vayan al "else" y esto hará que se vayan hacia abajo.
+
+```js
+  step() {
+    const choice = floor(random(7));
+    if (choice == 0) {
+      this.x++;
+    } else if (choice == 1) {
+      this.x--;
+    } else if (choice == 2) {
+      this.y++;
+    } else {
+      this.y--;
+    }
+  }
+```
+
+**Lo que realmente pasó:** El movimiento empezó a tender hacia arriba (no sabía que los y-- son valores positivos) 
+
+**Explicación:** Luego de investigar, entendí que y-- no es la dirección como tal sino un decremento al valor de la variable y.
+
+**Hipótesis 2:** Decidí colocarle los if's con sus respectivas condiciones a otros numéros diferentes (6,5,4) y considerando lo que pasó en la hipótesis anterior, creo que en esta ocasión sucederá que se van a ir hacia abajo. 
+
+```js
+ step() {
+    const choice = floor(random(7));
+    if (choice == 6) {
+      this.x++;
+    } else if (choice == 5) {
+      this.x--;
+    } else if (choice == 4) {
+      this.y++;
+    } else {
+      this.y--;
+    }
+  }
+```
+**Lo que realmente pasó:** También se fueron hacia arriba en esta ocasión.
+
+**Explicación:** esto sucedió porque las probabilidades de irse a y-- son mayores ya que le corresponden más números que al resto de condicionales. 
+
+
 
 
