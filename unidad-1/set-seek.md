@@ -9,4 +9,4 @@ Cuando hablamos de arte generativo, no buscamos crear una obra específica, sino
 ### Actividad 2
 
 - Luego de leer y ver el proyecto de Sofi, la aletoriedad cumple un papel fundamental dentro de la experiencia que emite su obra pues al integrar la interactivad, los patrones de movimiento aleatorios y los cambios de color impredecibles, hace que cada vez que alguien decida reproducir su proyecto tendrá una experiencia completamente diferente e irrepetible.
-- 
+- En los proyectos universitarios en los que he estado trabajando mis últimos semestres y después de hacer sus respectivos análisis, me di cuenta que la aletoriedad puede 
