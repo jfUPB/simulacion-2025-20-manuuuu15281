@@ -86,6 +86,62 @@ Cuando hablamos de arte generativo, no buscamos crear una obra específica, sino
 ```
 <img width="418" height="121" alt="image" src="https://github.com/user-attachments/assets/d5f23208-172b-44de-b7ff-6ce2058b0512" />
 
+### Actividad 5
+
+La forma en que decidí representar la distribución normal en este nuevo sketch fue creando en vez de elipses, unas estrellas en un fondo negro con una media de 320 y DS de 60 para ambas posiciones ( X y Y ), esto ocasionó que la mayoría de las estrellas se concentraran en el centro del canvas (cerca a la media elegida). Por último, decidí que esta vez quería parametrizar la DS y la media para poder ver como varia la aparición de las estrellas según voy modificando los parámetros.
+
+```js
+let mean = 320;
+let sd = 60;
+
+let meany = 320;
+let sdy = 60;
+
+function setup() {
+  createCanvas(640, 640);
+  background(10, 10, 30); // Fondo nocturno
+}
+
+function draw() {
+  let x = randomGaussian() * sd + mean;
+  let y = randomGaussian() * sdy + meany;
+
+  let innerRadius = 3;   // Tamaño del centro
+  let outerRadius = 8;  // Tamaño de las puntas
+  let npoints = 5;
+
+  drawStar(x, y, innerRadius, outerRadius, npoints);
+}
+
+function drawStar(x, y, radius1, radius2, npoints) {
+  let angle = TWO_PI / npoints;
+  let halfAngle = angle / 2.0;
+
+  push();
+  translate(x, y);
+  rotate(random(TWO_PI)); // orientación aleatoria
+  fill(random(200, 255), random(200, 255), 0, random(100, 200)); // amarillo suave
+  noStroke();
+  beginShape();
+  for (let a = 0; a < TWO_PI; a += angle) {
+    let sx = cos(a) * radius2;
+    let sy = sin(a) * radius2;
+    vertex(sx, sy);
+    sx = cos(a + halfAngle) * radius1;
+    sy = sin(a + halfAngle) * radius1;
+    vertex(sx, sy);
+  }
+   endShape(CLOSE); 
+  pop();
+}
+```
+
+
+[Link para ver el sketch](https://editor.p5js.org/manuuuu15281/sketches/YOBkOvfVc)
+
+<img width="594" height="591" alt="image" src="https://github.com/user-attachments/assets/f7bd739d-95d8-44c6-94a0-8ddaeadc23d3" />
+
+### Actividad 6 
 
 
 
