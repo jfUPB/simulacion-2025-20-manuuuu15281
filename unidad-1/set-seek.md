@@ -57,7 +57,33 @@ Cuando hablamos de arte generativo, no buscamos crear una obra específica, sino
 
 ### Actividad 4
 
+- Según la explicación del profe y los ejemplos dados en la clase, la distribución uniforme es cuando todos los numeros que salen aleatoriamente tienen la misma probabilidad de salir y por lo tanto es más impredecible. La distribución no uniforme (la del ejemplo RandomGaussian) es cuando los números que tienen más probabilidades de salir son los que están más cerca de la media y genera un comportamiento más suave y natural (se usa para hacer efectos naturales como humo).
 
+- **VERSIÓN INVENTADA POR MANU**: En un primer momento de experimentación  (me inventé ) para implementar una distribución No uniforme en el ejemplo RandomWalker lo  primero que hice fue cambiar Random(4) por RandomGaussian() y eliminé los condicionales que no fuera el que contenía el cero. Por último, modifiqué las direcciones de los condicionales (if choice==0 a x-- y else a x++) y así logré que se moviera a la derecha.
+
+```js
+  step() {
+    const choice = floor(randomGaussian());
+    if (choice == 0) {
+      this.x--;
+    } else {
+      this.x++;
+    }
+  }
+```
+
+- **VERSIÓN CONSULTADA A LA IA**: PERO me parecía que no estaba teniendo ese movimiento natural que promete la distribución no uniforme así que con consejos de la IA traté de arreglarlo y llegamos a que se viera más natural.
+  
+```js
+  step() {
+   let stepx = randomGaussian() * 2 + 1;  // media = +1 → tiende a moverse a la derecha
+    let stepy = randomGaussian();          // media = 0 → sin sesgo vertical
+
+    this.x += stepx;
+    this.y += stepy;
+  }
+```
+  
 
 
 
