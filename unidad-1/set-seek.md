@@ -71,6 +71,7 @@ Cuando hablamos de arte generativo, no buscamos crear una obra específica, sino
     }
   }
 ```
+<img width="191" height="136" alt="image" src="https://github.com/user-attachments/assets/9bdc45d9-9fa9-49ce-8f3d-0a6f01102b40" />
 
 - **VERSIÓN CONSULTADA A LA IA**: PERO me parecía que no estaba teniendo ese movimiento natural que promete la distribución no uniforme así que con consejos de la IA traté de arreglarlo y llegamos a que se viera más natural.
   
@@ -83,7 +84,8 @@ Cuando hablamos de arte generativo, no buscamos crear una obra específica, sino
     this.y += stepy;
   }
 ```
-  
+<img width="418" height="121" alt="image" src="https://github.com/user-attachments/assets/d5f23208-172b-44de-b7ff-6ce2058b0512" />
+
 
 
 
