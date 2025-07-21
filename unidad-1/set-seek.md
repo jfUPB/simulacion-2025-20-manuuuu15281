@@ -213,4 +213,71 @@ class Walker {
 
 <img width="407" height="239" alt="image" src="https://github.com/user-attachments/assets/c7a4a7dd-e075-43ff-9912-5f74706a36e5" />
 
+### Actividad 7
+
+Para visualizar el Perlin Noise de otra manera me imaginé una linea que su dirección fuera controlada por el Perlin Noise, además de tener cambios de color en donde los valores de colores también fueran controlados por un Perlin Noise. En el primer intento salió super bien, pero quise añadir una función de slider para el parámetro que controla el avanzar en el tiempo (algo que nos explicaba el texto guía). Así fue como me quedó: 
+
+```js
+let x, y;
+let t = 0;
+let ct = 1000;
+let timeSlider;
+
+function setup() {
+  createCanvas(800, 400);
+  background(255);
+  x = width / 2;
+  y = height / 2;
+  strokeWeight(2);
+
+  // Crear el slider (rango: 0.001 a 0.1)
+  createP("Velocidad del tiempo (t):");
+  timeSlider = createSlider(0.001, 0.1, 0.01, 0.001);
+  timeSlider.style('width', '200px');
+}
+
+function draw() {
+  // Leer valor del slider
+  let timeStep = timeSlider.value();
+
+  // Dirección controlada por ruido Perlin
+  let angle = noise(t) * TWO_PI * 2;
+  let stepSize = 2;
+  let dx = cos(angle) * stepSize;
+  let dy = sin(angle) * stepSize;
+
+  // Calcular nueva posición
+  let newX = x + dx;
+  let newY = y + dy;
+
+  // Mantener dentro del canvas
+  if (newX < 0 || newX > width || newY < 0 || newY > height) {
+    t += 0.1;
+    return;
+  }
+
+  // Color controlado con Perlin noise
+  let r = noise(ct) * 255;
+  let g = noise(ct + 100) * 255;
+  let b = noise(ct + 200) * 255;
+
+  stroke(r, g, b);
+  line(x, y, newX, newY);
+
+  // Actualizar posición y tiempo
+  x = newX;
+  y = newY;
+  t += timeStep;  // ← este valor lo controla el slider
+  ct += 0.005;
+}
+
+```
+
+[Link para ver el Sketch](https://editor.p5js.org/manuuuu15281/sketches/x3sSH5h2N)
+
+<img width="545" height="395" alt="image" src="https://github.com/user-attachments/assets/b7cd1184-3158-4982-98f6-46c1a4f055be" />
+
+Noticas: Profe la verdad me ayudé mucho de la IA porque de la mayoría de cosas que se me ocurrieron no las sabía hacer jeje :) 
+
+
 
