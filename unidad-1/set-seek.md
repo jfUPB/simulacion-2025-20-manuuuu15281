@@ -142,6 +142,75 @@ function drawStar(x, y, radius1, radius2, npoints) {
 <img width="594" height="591" alt="image" src="https://github.com/user-attachments/assets/f7bd739d-95d8-44c6-94a0-8ddaeadc23d3" />
 
 ### Actividad 6 
+Para hacer esta actividad, utilicé uno de los ejemplos que ya habiamos trabajado en actividades anterioes (Random walker con distribución No uniforme con tendencia a moverse a la derecha) y le añadí  la distribución Levy flight. 
+1. Lo primero que hice fue utilizar el pedazo de código que sugiere el texto guía:
+   
+```js
+   let r = random(1);
+//{!3} A 1% chance of taking a large step
+if (r < 0.01) {
+  xstep = random(-100, 100);
+  ystep = random(-100, 100);
+} else {
+  xstep = random(-1, 1);
+  ystep = random(-1, 1);
+}
+```
+2. En la función step() modifiqué el código original, añadí el pedazo de código sugerido y modifiqué las respectivas condiciones.
 
+```js
+let walker;
+
+function setup() {
+  createCanvas(640, 240);
+  walker = new Walker();
+  background(255);
+}
+
+function draw() {
+  walker.step();
+  walker.show();
+}
+
+class Walker {
+  constructor() {
+    this.x = width / 2;
+    this.y = height / 2;
+  }
+
+  show() {
+    stroke(0);
+    point(this.x, this.y);
+  }
+
+  step() {
+    let stepx, stepy;
+
+    let r = random(1);
+    if (r < 0.01) {
+      // 1% de probabilidad de salto grande (Levy flight)
+      stepx = random(-100, 100);
+      stepy = random(-100, 100);
+    } else {
+      // 99% de probabilidad de paso pequeño con tendencia hacia la derecha
+      stepx = randomGaussian() * 2 + 1;
+      stepy = randomGaussian();
+    }
+
+    this.x += stepx;
+    this.y += stepy;
+
+    //limitar al canvas con ayuda de la IA jeje
+    this.x = constrain(this.x, 0, width);
+    this.y = constrain(this.y, 0, height);
+  }
+}
+
+```
+3. Por último, añadí una funcionalidad de que el random walk no se pueda salir del canvas. 
+
+[Link para ver el sketch](https://editor.p5js.org/manuuuu15281/sketches/0nKaQAP1P)
+
+<img width="407" height="239" alt="image" src="https://github.com/user-attachments/assets/c7a4a7dd-e075-43ff-9912-5f74706a36e5" />
 
 
