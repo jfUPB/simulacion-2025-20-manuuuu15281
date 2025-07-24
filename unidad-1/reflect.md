@@ -2,7 +2,7 @@
 
 ## 🤔 Fase: Reflect
 
-### Parte 1
+### Actividad 9: Parte 1
 
 **1. Describe la diferencia fundamental entre la aleatoriedad generada por random() y la apariencia de aleatoriedad del Ruido Perlin (noise()). ¿En qué tipo de situación usarías cada una**
 
@@ -41,6 +41,8 @@ Creo que esto sin duda fue de las cosas que más se me dificultó implementar pu
 **4. Si tuvieras que empezar la Actividad 08 de nuevo, ¿Qué harías de manera diferente basándote en lo que sabes ahora?**
 
 Creo que me hubiese gustado ver referentes y consumir más contenido generativo para ser más original y que saliera una idea más cool. También sentí que no fui más allá en la creación del concepto, por eso mi mayor compromiso será ver muchos referentes para poder nutrir mi cerebro de ideas nuevas. 
+
+### Actividad 10
  
 
    
