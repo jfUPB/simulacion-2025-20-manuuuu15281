@@ -31,7 +31,7 @@ En JavaScript, el operador + no sabe sumar objetos p5.Vector y .add() está defi
 [Link para ver el ejemplo comentado de la clase](https://editor.p5js.org/manuuuu15281/sketches/e307PnlQP)
 
 ### Actividad 2
-
+Para desarrolar esta actividad utilicé el ejemplo del random Walker. Para hacer que el código funcionara con vectores en la clase walker creé una variable donde almacené la dirección del vector en X y Y. También  en el show() modificamos los parametos de point() y le añadimos el nuevo nombre (position) para que los reconociera después de los cambios de...
 
 
 
