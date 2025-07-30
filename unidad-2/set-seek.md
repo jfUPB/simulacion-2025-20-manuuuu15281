@@ -78,6 +78,14 @@ class Walker {
 }
 
 ```
+### Actividad 3
 
+Cuando analizamos este código en la clase, pensé que el código iba a imprimir primero el vector con la dirección (6,9) y luego esos valores serian modificados y volveria a imprimir el vector pero con los valores actualizados. Efectivamente así sucedió, y tenía sentido por la explicación del código que el profe dió y los console.log que hay en el código. 
+
+**Paso por valor en programación:**
+Este aún no me quedó tan claro, pero investigando llegué a que es cuando pasas cosas como argumentos en funciones, JavaScript crea una copia del valor. Por tanto, cualquier cambio dentro de la función no afecta al valor original fuera de ella.
+
+
+**Paso por referencia en programación:**
 
 
