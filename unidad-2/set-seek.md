@@ -155,7 +155,15 @@ Este método convierte un vector cualquiera en un vector unitario (un vector uni
 
 - **Ahora el mismo periodista curioso de antes te pregunta si le puedes dar una intuición geométrica acerca del producto cruz. Entonces te pregunta ¿Cuál es la interpretación geométrica del producto cruz de dos vectores? Tu respuesta debe incluir qué pasa con la orientación y la magnitud del vector resultante.**
 
-  El producto cruz 
+  El producto cruz entre dos vectores da cómo resultado un vector que sale de manera ortogonal (perpendicular) al plano formado entre los dos vectores originales y además su magnitud es igual al área del pararelogramo que se forma con esos dos vectores base.
+
+- **¿Para que te puede servir el método dist()?**
+
+  Este método nos sirve para calcular la distancia que hay entre dos puntos, lo puede hacer mediante coordenadas o vectores. Puede ser muy útil para detectar si el mouse está cerca de algún objeto y quiero agregar alguna interactividad o dibujar líneas o curvas entre puntos que estén a cierta distancia.
+
+- **¿Para qué sirven los métodos normalize() y limit()?**
+
+  El método normalize() sirve para convertir cualquier vector en un vector unitario (ayuda si necesitamos tener movimientos con velocidades constantes). Por su lado el método limit() permite "cortar" la magnitud de un vector para evitar que pase de una velocidad o fuerza máxima pero siempre mantiene su dirección.
  
   
 
