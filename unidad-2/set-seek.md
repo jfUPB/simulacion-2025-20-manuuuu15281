@@ -85,7 +85,54 @@ Cuando analizamos este código en la clase, pensé que el código iba a imprimir
 **Paso por valor en programación:**
 Este aún no me quedó tan claro, pero investigando llegué a que es cuando pasas cosas como argumentos en funciones, JavaScript crea una copia del valor. Por tanto, cualquier cambio dentro de la función no afecta al valor original fuera de ella.
 
+Un ejemplo puede ser: 
+
+```js
+function cambiarValor(x) {
+  x = x + 1;
+  console.log("Dentro de la función:", x);
+}
+
+let numero = 5;
+cambiarValor(numero);
+console.log("Fuera de la función:", numero);
+```
 
 **Paso por referencia en programación:**
+
+Este lo entendí muy bien por la explicación del profe en la clase y es cuando pasamos objetos por referencia lo que se está pasando es una referencia a la ubicación en memoria del objeto original (que es lo que sucede en el código del ejemplo que el profe dió en clase antes de modificarlo). Esto quiere decir que si modificas las propiedades del objeto dentro de la función, esto si afectará al objeto original. Investigando un poco de cómo funcionaba esta manera de programar, encontré que los tipos de referencias que se pueden pasar son **Object, Array y Function**. 
+
+Un ejemplo de esto: 
+```js
+function modificarObjeto(obj) {
+  obj.nombre = "Ana";
+}
+
+let persona = { nombre: "Luis" };
+modificarObjeto(persona);
+console.log("Después de la función:", persona.nombre)
+```
+En el ejemplo queda en evidencia cómo pasamos como una referencia el nombre "ana" y se modificó el contenido original de la variable persona. 
+
+En el código que el profe nos enseñó en clase se está aplicando paso por referencia y se evidencia tal cual lo que pasa en el ejemplo anterior. El profe luego hizo algunas modificaciones que nos ayudó a comprender cómo podiamos hacer un traspaso por referencia pero sin modificar el arreglo original. 
+
+De esa actividad recordé el concepto de paso por valor y por referencia, también comprendí cómo hacer una copia de un array y trabajar sobre esta sin modificar el arreglo original. 
+
+### Actividad 4
+
+- **¿Para qué sirve el método mag()? Nota que hay otro método llamado magSq(). ¿Cuál es la diferencia entre ambos? ¿Cuál es más eficiente?**
+
+  El método mag() sirve para calcular la magnitud de un vector en dos dimensiones (x , y) y este aplica la raíz cuadrada al calculo de la magnitud. Por su lado, el método magSq() calcula la magnitud del vector pero a diferencia de mag()  este devuelve lo que queda dentro de la raíz cuadrada (no la aplica). Lo que quiere decir que la segunda opción es más rápida porque evita la raíz cuadrada, lo que puede ser útil en visualizaciones en tiempo real, juegos o simulaciones.
+
+- **¿Para qué sirve el método normalize()?**
+
+Este método convierte un vector cualquiera en un vector unitario (un vector unitario es el que tiene magnitud 1) y se usa para indicar direcciones sin importar la distancia o para generar movimientos con velocidad constante. 
+
+- **Te encuentras con un periodista en la calle y te pregunta ¿Para qué sirve el método dot()? ¿Qué le responderías en un frase? **
+  
+
+
+
+
 
 
