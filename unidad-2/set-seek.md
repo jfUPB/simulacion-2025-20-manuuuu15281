@@ -128,7 +128,37 @@ De esa actividad recordé el concepto de paso por valor y por referencia, tambi�
 
 Este método convierte un vector cualquiera en un vector unitario (un vector unitario es el que tiene magnitud 1) y se usa para indicar direcciones sin importar la distancia o para generar movimientos con velocidad constante. 
 
-- **Te encuentras con un periodista en la calle y te pregunta ¿Para qué sirve el método dot()? ¿Qué le responderías en un frase? **
+- **Te encuentras con un periodista en la calle y te pregunta ¿Para qué sirve el método dot()? ¿Qué le responderías en un frase?**
+
+  Bro sirve para calcular el producto punto entre dos vectores, también te dice que tan alineados están dos vectores entre si.
+
+  Y si me sigue preguntando le digo:  sirve también para ver si dos vectores se mueven en la misma dirección (dot > 0), en direcciones       opuestas (dot < 0), o si son perpendiculares (dot = 0).
+
+- **El método dot() tiene una versión estática y una de instancia. ¿Cuál es la diferencia entre ambas?**
+
+  La diferencia entre la versión estática y la versión de instancia del método dot() en p5.js tiene que ver con cómo se llama al método y dónde se coloca el vector base, pero hacen exactamnete lo mismo pero con sintaxis diferentes:
+  
+  1. **Version instancia:** se llama desde un vector en específico, y calcula el producto punto con otro vector que se pone como argumento.
+     
+     ```js
+       let v1 = createVector(1, 2);
+       let v2 = createVector(3, 4);
+       let resultado = v1.dot(v2); // dot entre v1 y v2
+     ```
+  2. **Version estática:** Esta version llama directamnete desde la clase p5.vector y no depende de ninguna instancia. Necesita dos vectores como argumentos.
+     
+     ```js
+       let v1 = createVector(1, 2);
+       let v2 = createVector(3, 4);
+       let resultado = p5.Vector.dot(v1, v2);
+     ```
+
+- **Ahora el mismo periodista curioso de antes te pregunta si le puedes dar una intuición geométrica acerca del producto cruz. Entonces te pregunta ¿Cuál es la interpretación geométrica del producto cruz de dos vectores? Tu respuesta debe incluir qué pasa con la orientación y la magnitud del vector resultante.**
+
+  El producto cruz 
+ 
+  
+
   
 
 
