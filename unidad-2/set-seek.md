@@ -164,10 +164,16 @@ Este método convierte un vector cualquiera en un vector unitario (un vector uni
 - **¿Para qué sirven los métodos normalize() y limit()?**
 
   El método normalize() sirve para convertir cualquier vector en un vector unitario (ayuda si necesitamos tener movimientos con velocidades constantes). Por su lado el método limit() permite "cortar" la magnitud de un vector para evitar que pase de una velocidad o fuerza máxima pero siempre mantiene su dirección.
+
+
+### Actividad 5
+
+
  
   
 
   
+
 
 
 
