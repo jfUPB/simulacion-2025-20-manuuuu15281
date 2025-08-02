@@ -168,11 +168,91 @@ Este método convierte un vector cualquiera en un vector unitario (un vector uni
 
 ### Actividad 5
 
+**Código de p5.js**
+
+```js
+let tiempo = 0;
+
+let mover = 1; 
+
+function setup() {
+    createCanvas(400, 400);
+}
+
+function draw() {
+    background(200);
+  
+   translate(50, 50); // trasladar el punto de origen a las coordenadas (50,50)
+  
+    let v0 = createVector(0, 0); // este en el 0,0
+    let v1 = createVector(300, 0);
+    let v2 = createVector(0, 300);
+    let v4 = createVector(-300,300);
+    let v3 = p5.Vector.lerp(v1, v2, tiempo);
+  
+    
+    let red1= color(255,0,0);
+    let blue1= color(0,0,255);
+    let degradado = lerpColor(blue1, red1, mover);
+  
+  
+  
+    //lerpColor(c1, c2, amt)
+  
+  tiempo+= 0.01*mover;
+   
+  if (tiempo <=0) 
+    {
+      
+      mover =1;
+    }
+  if ( tiempo >=1)
+    {
+      mover=-1;
+    }
+  
+    drawArrow(v0, v1, 'red');
+    drawArrow(v0, v2, 'blue');
+    drawArrow(v1, v4, 'green');
+    drawArrow(v0, v3, 'purple');
+    drawArrow(v0, v3, degradado);
+  
+}
+
+
+
+function drawArrow(base, vec, myColor) {
+    push();
+    stroke(myColor);
+    strokeWeight(3);
+    fill(myColor);
+    translate(base.x, base.y);
+    line(0, 0, vec.x, vec.y);
+    rotate(vec.heading());
+    let arrowSize = 7;
+    translate(vec.mag() - arrowSize, 0);
+    triangle(0, arrowSize / 2, 0, -arrowSize / 2, arrowSize, 0);
+    pop();
+}
+```
+
+- **¿Cómo funciona lerp() y lerpColor() ?**
+
+  
+
+  
+
+
+  
+
+
+
 
  
   
 
   
+
 
 
 
