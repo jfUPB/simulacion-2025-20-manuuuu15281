@@ -277,7 +277,7 @@ function drawArrow(base, vec, myColor) {
 
 ### Actividad 6
 
-**Cuál es el concepto del marco motion 101 y cómo se interpreta geométricamente.**
+**¿Cuál es el concepto del marco motion 101 y cómo se interpreta geométricamente?**
 
 El concepto de Motion 101 sirve para entender cómo representar y simular el movimiento de un objeto en una simulación basada en la física. Esta simulación está controlada por 3 vectores clave: vector posición, vector velocidad y vector aceleració. Este modelo se basa directamente en las leyes del movimiento de Newton y permite simular movimiento natural de una forma modular y precisa.
 
@@ -302,12 +302,18 @@ y su respectiva interpretación geometrica es:
 - velocity es una flecha (vector) que indica hacia dónde se mueve y qué tan rápido.
 
 - acceleration es otra flecha que indica cómo cambia esa velocidad, ya sea aumentando, disminuyendo o cambiando de dirección.
-- 
 
 **¿Cómo se aplica motion 101 en el ejemplo?**
 
+En el ejemplo podemos ver cómo la bolita se desplaza gracias a tres vectores (uno de posición, otro de velocidad y uno de la aceleración que se le va aplicando constantemente. Se ve más o menos así:
 
+- position: posición de la pelota.
 
+- velocity: velocidad con la que se mueve.
+
+- acceleration: aceleración que se aplica constantemente.
+
+Cada cuadro (frame) del programa actualiza estos vectores para simular un movimiento fluido y con comportamiento físico básico.
   
 
   
@@ -322,6 +328,7 @@ y su respectiva interpretación geometrica es:
   
 
   
+
 
 
 
