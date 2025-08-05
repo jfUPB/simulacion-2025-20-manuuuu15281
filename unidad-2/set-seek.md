@@ -314,6 +314,103 @@ En el ejemplo podemos ver cómo la bolita se desplaza gracias a tres vectores (u
 - acceleration: aceleración que se aplica constantemente.
 
 Cada cuadro (frame) del programa actualiza estos vectores para simular un movimiento fluido y con comportamiento físico básico.
+
+### Actividad 7
+
+Mi ejemplito es un poco básico pero cumple su objetivo de mostrar las diferencias del movimiento de un objeto según el tipo de aceleración que tenga. Es un objeto en forma de corazón que se mueve según el botón que se presione (los botones son los 3 tipos de aceleraciones). 
+
+Para crear este código yo implementé lo que el profe nos explicó en clase y lo hice de la misma manera que él, pero para tener efectos tipo "rebote" o formas de corazón me ayudé mucho de la IA. 
+
+**Código p5.js**
+
+```js
+let position, velocity, acceleration;
+let modo = 1; // 1: constante, 2: aleatoria, 3: hacia el mouse
+
+let btn1, btn2, btn3;
+
+function setup() {
+  createCanvas(600, 400);
+  position = createVector(width / 2, height / 2);
+  velocity = createVector(0, 0);
+  acceleration = createVector(0, 0);
+
+  // Crear botones
+  btn1 = createButton('Aceleración constante');
+  btn1.position(10, height + 10);
+  btn1.mousePressed(() => modo = 1);
+
+  btn2 = createButton('Aceleración aleatoria');
+  btn2.position(170, height + 10);
+  btn2.mousePressed(() => modo = 2);
+
+  btn3 = createButton('Aceleración hacia el mouse');
+  btn3.position(320, height + 10);
+  btn3.mousePressed(() => modo = 3);
+}
+
+function draw() {
+  background(255);
+
+   // 1. Aceleración constante (como gravedad)
+  if (modo === 1) {
+    acceleration = createVector(0, 0.1);
+  }
+
+  // 2. Aceleración aleatoria
+  if (modo === 2) {
+    let ax = random(-0.2, 0.2);
+    let ay = random(-0.2, 0.2);
+    acceleration = createVector(ax, ay);
+  }
+
+  // 3. Aceleración hacia el mouse
+  if (modo === 3) {
+    let dir = createVector(mouseX, mouseY);
+    dir.sub(position);
+    dir.setMag(0.9); // magnitud constante
+    acceleration = dir;
+  }
+
+  // Motion 101
+  velocity.add(acceleration);
+  position.add(velocity);
+
+  // Rebotar en los bordes para mantener el corazón visible
+  if (position.x < 0 || position.x > width) {
+    velocity.x *= -1;
+    position.x = constrain(position.x, 0, width);
+  }
+  if (position.y < 0 || position.y > height) {
+    velocity.y *= -1;
+    position.y = constrain(position.y, 0, height);
+  }
+
+  drawHeart(position.x, position.y, 20);
+}
+
+// Función para dibujar el corazón
+function drawHeart(x, y, size) {
+  push();
+  translate(x, y);
+  fill(255, 0, 100);
+  noStroke();
+  beginShape();
+  vertex(0, -size / 2);
+  bezierVertex(size / 2, -size, size, -size / 4, 0, size);
+  bezierVertex(-size, -size / 4, -size / 2, -size, 0, -size / 2);
+  endShape(CLOSE);
+  pop();
+}
+```
+
+[Link para acceder a mi experimento](https://editor.p5js.org/manuuuu15281/sketches/SdFiL7lpc)
+
+**¿Qué observaste cuando usas cada una de las aceleraciones propuestas?**
+
+- Cuando usé la aceleración constente me di cuenta que el corazón siempre se movía la misma distancia y de una misma manera, era un movimiento muy tranquilo y controlado.
+- Cuando usé la aceleración random la dirección del vector aceleración surgía aleatoriamente por lo que generaba movimientos impredecibles.
+- Cuando implementé la aceleración hacia el mouse me pareció muy interesante la manera tan sencilla en que funcionaba. En el movimiento percibí cambios de posición muy drasticos según la posición del mouse y el control del corazón dependía en gran parte del valor en la magnitud que se le podía modificar al código. 
   
 
   
@@ -328,6 +425,7 @@ Cada cuadro (frame) del programa actualiza estos vectores para simular un movimi
   
 
   
+
 
 
 
