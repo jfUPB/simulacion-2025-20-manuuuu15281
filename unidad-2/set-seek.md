@@ -238,6 +238,16 @@ function drawArrow(base, vec, myColor) {
 
 - **¿Cómo funciona lerp() y lerpColor() ?**
 
+  lerp() es una función que se usa para hacer interpolación lineal entre dos coordenadas o valores numéricos. Por su parte, el método lerpColor() se usa para hacer interpolaciones de color (hacer una mezcla gradual).
+
+  En mi caso no puede
+
+  
+
+  
+
+
+
   
 
   
@@ -252,6 +262,7 @@ function drawArrow(base, vec, myColor) {
   
 
   
+
 
 
 
