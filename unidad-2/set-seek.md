@@ -240,11 +240,71 @@ function drawArrow(base, vec, myColor) {
 
   lerp() es una función que se usa para hacer interpolación lineal entre dos coordenadas o valores numéricos. Por su parte, el método lerpColor() se usa para hacer interpolaciones de color (hacer una mezcla gradual).
 
-  En mi caso no puede
+  En mi caso no logré implementar bien el lepColor() y aunque intenté arreglarlo,  no me funcionó (cambia entre rojo y azul drasticamente y no crea la interpolación)
 
-  
+ - **¿Cómo se dibuja una flecha usando drawArrow()**
 
-  
+   Para usar la función drawArrow() debemos entender cómo llamarla:  drawArrow(v0, v1, 'red');
+   v0 = a la base, la coordenada a la que se traslada el plano cartesiano.
+   v1 = es la coordenada que indica el punto destino final del vector creado.
+   'red' = es el color de la flecha.
+
+   Para poder llamarla para que funcione, debemos entender cómo funciona internamente:
+
+```js
+   
+   function drawArrow(base, vec, myColor) {
+    push(); // Guarda el estado actual de estilo y coordenadas
+
+    stroke(myColor);       // Color del contorno de la flecha
+    strokeWeight(3);       // Grosor de la línea
+    fill(myColor);         // Color de relleno (para la punta de flecha)
+
+    translate(base.x, base.y); // Mueve el sistema de coordenadas al punto base
+
+    line(0, 0, vec.x, vec.y); // Dibuja una línea desde el origen (relativo) hasta la punta del vector
+
+    rotate(vec.heading()); // Rota el sistema según el ángulo del vector (para alinear la punta de flecha)
+    
+    let arrowSize = 7;     // Tamaño de la punta de flecha
+
+    translate(vec.mag() - arrowSize, 0); // Mueve hasta casi el final del vector
+    triangle(0, arrowSize / 2, 0, -arrowSize / 2, arrowSize, 0); // Dibuja la punta triangular
+
+    pop(); // Restaura el estado original }
+
+```
+
+### Actividad 6
+
+**Cuál es el concepto del marco motion 101 y cómo se interpreta geométricamente.**
+
+El concepto de Motion 101 sirve para entender cómo representar y simular el movimiento de un objeto en una simulación basada en la física. Esta simulación está controlada por 3 vectores clave: vector posición, vector velocidad y vector aceleració. Este modelo se basa directamente en las leyes del movimiento de Newton y permite simular movimiento natural de una forma modular y precisa.
+
+Cada cuadro o frame de la simulación sigue ese flujo:
+
+- **1. la aceleración modifica la velocidad**
+ 
+```js
+velocity.add(acceleration);
+```
+
+- **2. La velocidad modifica la posición**
+
+```js
+position.add(velocity);
+```
+
+y su respectiva interpretación geometrica es: 
+
+- La position es el punto donde se encuentra el objeto en el espacio.
+
+- velocity es una flecha (vector) que indica hacia dónde se mueve y qué tan rápido.
+
+- acceleration es otra flecha que indica cómo cambia esa velocidad, ya sea aumentando, disminuyendo o cambiando de dirección.
+- 
+
+**¿Cómo se aplica motion 101 en el ejemplo?**
 
 
 
@@ -262,6 +322,7 @@ function drawArrow(base, vec, myColor) {
   
 
   
+
 
 
 
