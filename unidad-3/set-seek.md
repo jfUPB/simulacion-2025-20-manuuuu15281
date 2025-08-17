@@ -206,5 +206,9 @@ class Mover {
 <img width="888" height="518" alt="image" src="https://github.com/user-attachments/assets/5d3f325e-c3c4-4b78-851b-6503471768d5" />
 
 
+**Resistencia del aire y fluidos**
+
+
+
 
 
