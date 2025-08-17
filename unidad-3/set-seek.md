@@ -27,7 +27,7 @@ function applyFriction(m, mu) {
 
 Para mi obra generativa decidí crear un pincel en forma de barra rectangular que tiene integrados cuadros de colores que pintan con una opacidad baja, podemos modificar el mu con un slider y en el parámetro de gravedad podemos modificarlo como prefiramos. 
 
-(Link para ver)[https://editor.p5js.org/manuuuu15281/sketches/HIAVtpuk4]
+[Link para ver sketch](https://editor.p5js.org/manuuuu15281/sketches/HIAVtpuk4)
 
 ```js
 let mover;
@@ -204,6 +204,7 @@ class Mover {
 }
 ```
 <img width="888" height="518" alt="image" src="https://github.com/user-attachments/assets/5d3f325e-c3c4-4b78-851b-6503471768d5" />
+
 
 
 
