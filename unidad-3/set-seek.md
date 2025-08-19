@@ -450,9 +450,201 @@ Mi concepto es muy literal, se trata de planetas que atraen particulas de su col
 
 [Link par aver el sketch](https://editor.p5js.org/manuuuu15281/sketches/Fva99BJrW)
 
+```js
+let particles = [];
+let planets = [];
+let paintLayer;
+
+const G = 2.0;             // más alto para que la curvatura se note
+const N_PARTICLES = 400;
+const N_PLANETS = 4;
+
+const R_MIN = 10;          // límites para estabilidad numérica
+const R_MAX = 400;
+
+function setup() {
+  createCanvas(1000, 600);
+  colorMode(HSB, 360, 100, 100, 255);
+
+  paintLayer = createGraphics(width, height);
+  paintLayer.colorMode(HSB, 360, 100, 100, 255);
+  paintLayer.clear();
+
+  // Planetas
+  for (let i = 0; i < N_PLANETS; i++) {
+    const x = random(width * 0.2, width * 0.8);
+    const y = random(height * 0.2, height * 0.8);
+    const r = random(26, 50);      // radio visible
+    const m = r * 4.0;             // masa proporcional (más fuerte)
+    const hue = random(0, 300);
+    planets.push(new Planet(x, y, r, m, hue));
+  }
+
+  // Partículas
+  for (let i = 0; i < N_PARTICLES; i++) {
+    const x = random(width);
+    const y = random(height);
+    const v = p5.Vector.random2D().mult(random(0.05, 0.4)); // bajas velocidades
+    particles.push(new Particle(x, y, v, 1));
+  }
+}
+
+function draw() {
+  background(0);
+
+  // 1) Desvanecido muy suave del rastro (NO limpiar; solo amortiguar saturación)
+  paintLayer.push();
+  paintLayer.noStroke();
+  paintLayer.fill(0, 0, 0, 15); // prueba 10–20 según gusto
+  paintLayer.rect(0, 0, width, height);
+  paintLayer.pop();
+
+  image(paintLayer, 0, 0);
+
+  // 2) Arrastre de planetas (drag & drop)
+  for (let pl of planets) {
+    pl.updateDrag();
+    pl.display();
+  }
+
+  // 3) Física de partículas
+  for (let p of particles) {
+    // planeta dominante = el que produce MAYOR fuerza (en magnitud)
+    let bestF = null;
+    let bestMag = -1;
+    let bestHue = 0;
+
+    for (let pl of planets) {
+      const F = gravitationalAttraction(pl, p);
+      const mag = F.mag();
+      if (mag > bestMag) {
+        bestMag = mag;
+        bestF = F;
+        bestHue = pl.hue;
+      }
+    }
+
+    // Aplica solo la fuerza del planeta dominante (resalta la dirección “visible”)
+    if (bestF) p.applyForce(bestF);
+
+    p.update();
+    p.edges();
+    p.paint(paintLayer, bestHue);
+  }
+
+  // HUD
+  noStroke();
+  fill(0, 0, 100, 160);
+  rect(8, 8, 320, 48, 8);
+  fill(0);
+  textSize(12);
+  text('Arrastra los planetas. Color de la partícula = planeta que más la atrae', 16, 28);
+  text('Órbitas/curvas visibles sin rayones ni saturación', 16, 44);
+}
+
+// --- Gravedad de un planeta sobre una partícula (Nature of Code) ---
+function gravitationalAttraction(planet, particle) {
+  const force = p5.Vector.sub(planet.pos, particle.pos); // r = P - p
+  let r = force.mag();
+  r = constrain(r, R_MIN, R_MAX);
+  force.normalize(); // r_hat
+  const strength = (G * planet.mass * particle.mass) / (r * r);
+  force.mult(strength);
+  return force;
+}
+
+// -------------------- Clases --------------------
+class Particle {
+  constructor(x, y, v, m) {
+    this.pos = createVector(x, y);
+    this.vel = v.copy();
+    this.acc = createVector(0, 0);
+    this.mass = m;
+  }
+
+  applyForce(F) {
+    const a = p5.Vector.div(F, this.mass);
+    this.acc.add(a);
+  }
+
+  update() {
+    this.vel.add(this.acc);
+    this.vel.limit(5.0);        // evita “rayas” cruzadas a gran velocidad
+    this.vel.mult(0.997);       // disipación mínima para suavizar
+    this.pos.add(this.vel);
+    this.acc.mult(0);
+  }
+
+  paint(g, hue) {
+    g.noStroke();
+    g.fill(hue, 85, 100, 180);  // opacidad media-alta
+    const d = map(this.vel.mag(), 0, 5, 1.8, 4.5, true);
+    g.ellipse(this.pos.x, this.pos.y, d, d);
+  }
+
+  edges() {
+    // Rebote casi elástico (no perder energía)
+    if (this.pos.x < 0)     { this.pos.x = 0;     this.vel.x *= -0.98; }
+    if (this.pos.x > width) { this.pos.x = width; this.vel.x *= -0.98; }
+    if (this.pos.y < 0)     { this.pos.y = 0;     this.vel.y *= -0.98; }
+    if (this.pos.y > height){ this.pos.y = height;this.vel.y *= -0.98; }
+  }
+}
+
+class Planet {
+  constructor(x, y, r, m, hue) {
+    this.pos = createVector(x, y);
+    this.r = r;
+    this.mass = m;
+    this.hue = hue;
+
+    this.dragging = false;
+    this.offset = createVector(0, 0);
+  }
+
+  updateDrag() {
+    if (this.dragging) {
+      this.pos.set(mouseX + this.offset.x, mouseY + this.offset.y);
+    }
+  }
+
+  display() {
+    push();
+    noStroke();
+    fill(this.hue, 60, 100, 220);
+    circle(this.pos.x, this.pos.y, this.r * 2);
+    noFill();
+    stroke(0, 0, 100, 220);
+    strokeWeight(2);
+    circle(this.pos.x, this.pos.y, this.r * 2);
+    pop();
+  }
+
+  pressed() {
+    const d = dist(mouseX, mouseY, this.pos.x, this.pos.y);
+    if (d < this.r) {
+      this.dragging = true;
+      this.offset.set(this.pos.x - mouseX, this.pos.y - mouseY);
+      return true;
+    }
+    return false;
+  }
+
+  released() { this.dragging = false; }
+}
+
+// --- Interacción para arrastrar planetas ---
+function mousePressed() {
+  for (let i = planets.length - 1; i >= 0; i--) {
+    if (planets[i].pressed()) break;
+  }
+}
+function mouseReleased() { for (let pl of planets) pl.released(); }
 ```
 
-```
+<img width="909" height="707" alt="image" src="https://github.com/user-attachments/assets/2d861d9a-e98f-4b92-8d97-b37a7dc057a0" />
+
+
 
 
 
