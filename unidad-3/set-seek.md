@@ -205,7 +205,220 @@ class Mover {
 ```
 <img width="888" height="518" alt="image" src="https://github.com/user-attachments/assets/5d3f325e-c3c4-4b78-851b-6503471768d5" />
 
-**Resistencia del aire y fluidos**
+**RESISTENCIA DEL AIRE Y FLUIDOS**
+
+Para modelar esta fuerza quise usar la formula de resistencia de fluido cuadrática: 
+
+<img width="183" height="58" alt="image" src="https://github.com/user-attachments/assets/11a07c41-061a-4341-812b-769bd97abb48" />
+
+En este caso en cada frame a cada "gota de pintura" se le aplican tres fuerzas (viento/remolino, Gravedad, Resistencia/ drag).La implementación clave dentro del código es la siguiente: 
+
+```js
+function applyQuadraticDrag(p, c) {
+  const speedSq = p.vel.magSq(); //calcular la velocidad al cuadrado
+  if (speedSq === 0) return;
+
+  // Vector de arrastre opuesto a la velocidad
+  let drag = p.vel.copy().normalize().mult(-1);  // crear copia, convertir en vector unitario  e invertir la dirección. 
+
+  // |Fd| = c * |v|^2
+  let dragMag = c * speedSq;  //Magnitud de la fuerza
+
+  drag.setMag(dragMag);  //Aplicar la magnitud al vector de dirección
+  p.applyForce(drag); //Sumatoria de fuerzas
+}
+```
+
+Quise representar esta fuerza en una obra generativa donde al dar clic sea un punto de pintura, pero resulta que la superficie está influenciada de corrientes de viento que simulan remolinos y que se modifican en tiempo real por medio de dos sliders. 
+
+[Link para ver sketch](https://editor.p5js.org/manuuuu15281/sketches/m3ZzpIGas)
+
+```js
+let droplets = [];      // varias gotas si haces varios clics, pero cada clic = 1 gota
+let field;
+let paintLayer;
+
+let cDrag = 0.015;      // coeficiente de resistencia (slider)
+let windMag = 0.7;      // fuerza del viento (slider)
+let gravity = 0.10;     // gravedad leve
+
+let cSlider, windSlider, clearBtn;
+
+function setup() {
+  createCanvas(900, 560);
+  colorMode(HSB, 360, 100, 100, 255);
+
+  paintLayer = createGraphics(width, height);
+  paintLayer.colorMode(HSB, 360, 100, 100, 255);
+  paintLayer.clear();
+
+  field = new FlowField(32);
+
+  // UI
+  createSpan('  c (drag): ').style('color', '#ddd');
+  cSlider = createSlider(0, 0.1, cDrag, 0.001).style('width', '200px');
+  createSpan('    viento: ').style('color', '#ddd');
+  windSlider = createSlider(0, 2.0, windMag, 0.05).style('width', '200px');
+  clearBtn = createButton('Limpiar pintura');
+  clearBtn.mousePressed(() => paintLayer.clear());
+}
+
+function draw() {
+  background(0);
+  image(paintLayer, 0, 0);
+
+  cDrag = cSlider.value();
+  windMag = windSlider.value();
+
+  field.update();
+
+  for (let i = droplets.length - 1; i >= 0; i--) {
+    const d = droplets[i];
+
+    // (1) viento/remolino (campo espacial)
+    let wind = field.lookup(d.pos).setMag(windMag);
+    d.applyForce(wind);
+
+    // (2) gravedad
+    d.applyForce(createVector(0, gravity * d.mass));
+
+    // (3) drag cuadrático
+    applyQuadraticDrag(d, cDrag);
+
+    d.update();
+    d.edges();
+    d.paint(paintLayer);
+
+    if (d.isExtinguished()) droplets.splice(i, 1);
+  }
+
+  // HUD mínimo
+  noStroke();
+  fill(0, 0, 100, 160);
+  rect(8, 8, 250, 48, 8);
+  fill(0);
+  textSize(12);
+  text('c (drag): ' + nf(cDrag, 1, 3), 16, 28);
+  text('viento:   ' + nf(windMag, 1, 2), 16, 44);
+}
+
+function mousePressed() {
+  addDroplet(mouseX, mouseY);
+}
+
+// --- una sola gota por clic ---
+function addDroplet(x, y) {
+  // velocidad inicial suave y aleatoria, la corriente redirige
+  const v0 = p5.Vector.fromAngle(random(TWO_PI)).mult(random(0.5, 2.0));
+  const m = random(0.8, 1.2);
+  const hue = random(0, 300);
+  droplets.push(new Droplet(createVector(x, y), v0, m, hue));
+}
+
+// --- Drag cuadrático ---
+function applyQuadraticDrag(p, c) {
+  const speedSq = p.vel.magSq();
+  if (speedSq === 0) return;
+  let drag = p.vel.copy().normalize().mult(-1);
+  drag.setMag(c * speedSq); // |Fd| = c * |v|^2
+  p.applyForce(drag);
+}
+
+// -------------------- Clases --------------------
+class Droplet {
+  constructor(pos, vel, mass, hue) {
+    this.pos = pos.copy();
+    this.vel = vel.copy();
+    this.acc = createVector(0, 0);
+    this.mass = mass;
+    this.hue = hue;
+
+    this.alpha = 150;          // opacidad media para superposición
+    this.radius = 10;          // tamaño inicial de la gota
+    this.paintLeft = 220;      // “cantidad” de pintura a gastar
+  }
+
+  applyForce(f) {
+    const a = p5.Vector.div(f, this.mass);
+    this.acc.add(a);
+  }
+
+  update() {
+    this.vel.add(this.acc);
+    this.pos.add(this.vel);
+    this.acc.mult(0);
+
+    // Desgaste de la gota: se consume más cuando va más rápido
+    const speed = this.vel.mag();
+    this.paintLeft -= 0.6 + 0.12 * speed;   // desgaste por tiempo + por velocidad
+    this.radius = max(0, this.radius - (0.02 + 0.01 * speed)); // encoge con el desgaste
+    this.alpha = max(0, this.alpha - 0.4 - 0.05 * speed);      // se va apagando
+  }
+
+  paint(g) {
+    if (this.alpha <= 0 || this.radius <= 0) return;
+    g.push();
+    g.noStroke();
+    g.fill(this.hue, 90, 100, this.alpha);
+    // “salpicadura” suave variable con la velocidad
+    const d = max(1.5, this.radius + map(this.vel.mag(), 0, 8, -2, 3, true));
+    g.ellipse(this.pos.x, this.pos.y, d, d);
+    g.pop();
+  }
+
+  edges() {
+    // rebote amortiguado para no salir del lienzo
+    if (this.pos.x < 0) { this.pos.x = 0; this.vel.x *= -0.5; }
+    if (this.pos.x > width) { this.pos.x = width; this.vel.x *= -0.5; }
+    if (this.pos.y < 0) { this.pos.y = 0; this.vel.y *= -0.5; }
+    if (this.pos.y > height) { this.pos.y = height; this.vel.y *= -0.5; }
+  }
+
+  isExtinguished() {
+    return this.paintLeft <= 0 || this.alpha <= 0 || this.radius <= 0;
+  }
+}
+
+// Campo de flujo (remolinos invisibles) con Perlin noise
+class FlowField {
+  constructor(scale) {
+    this.scale = scale;
+    this.cols = floor(width / scale) + 1;
+    this.rows = floor(height / scale) + 1;
+    this.field = Array.from({ length: this.cols }, () => Array(this.rows).fill(createVector(1, 0)));
+    this.zoff = 0;
+    this.generate();
+  }
+
+  generate() {
+    let xoff = 0;
+    for (let i = 0; i < this.cols; i++) {
+      let yoff = 0;
+      for (let j = 0; j < this.rows; j++) {
+        const theta = noise(xoff, yoff, this.zoff) * TWO_PI * 2.0;
+        const v = p5.Vector.fromAngle(theta).setMag(1);
+        this.field[i][j] = v;
+        yoff += 0.08;
+      }
+      xoff += 0.08;
+    }
+  }
+
+  update() {
+    this.zoff += 0.006;
+    this.generate();
+  }
+
+  lookup(pos) {
+    const col = constrain(floor(pos.x / this.scale), 0, this.cols - 1);
+    const row = constrain(floor(pos.y / this.scale), 0, this.rows - 1);
+    return this.field[col][row].copy();
+  }
+}
+```
+
+<img width="930" height="685" alt="image" src="https://github.com/user-attachments/assets/08e71eae-4b9d-41ad-b089-03da2de6b747" />
+
 
 
 
