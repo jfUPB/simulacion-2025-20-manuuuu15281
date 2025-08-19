@@ -425,6 +425,36 @@ Para hacer este modelado utilicé la formula de atracción gravitacional dada en
 
 <img width="217" height="90" alt="image" src="https://github.com/user-attachments/assets/f4a05573-ade3-4238-a39a-8a6e79857f8b" />
 
+Para modelarla me guié del texto guía y este es el código clave donde está implementada la formula.
+
+```js
+function gravitationalAttraction(planet, particle) {
+  // r = vector desde partícula hacia planeta
+  const force = p5.Vector.sub(planet.pos, particle.pos);
+  let r = force.mag();
+
+  // límites para estabilidad (evitar r → 0 o r enorme)
+  r = constrain(r, R_MIN, R_MAX);
+
+  force.normalize(); // r_hat
+  
+  // |F| = G * m1 * m2 / r^2
+  const strength = (G * planet.mass * particle.mass) / (r * r);
+  force.mult(strength);
+
+  return force; // apunta hacia el planeta
+}
+```
+
+Mi concepto es muy literal, se trata de planetas que atraen particulas de su color y se concentran en su nucleo, al mover el planeta sus particulas se mueven también intentanto buscar su planeta, en caso de alejarse mucho adaptaran su color al planeta más cercano que tengan. 
+
+[Link par aver el sketch](https://editor.p5js.org/manuuuu15281/sketches/Fva99BJrW)
+
+```
+
+```
+
+
 
 
 
