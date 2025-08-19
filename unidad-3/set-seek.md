@@ -419,6 +419,14 @@ class FlowField {
 
 <img width="930" height="685" alt="image" src="https://github.com/user-attachments/assets/08e71eae-4b9d-41ad-b089-03da2de6b747" />
 
+**ATRACCIÓN GRAVITACIONAL**
+
+Para hacer este modelado utilicé la formula de atracción gravitacional dada en el texto guía: 
+
+<img width="217" height="90" alt="image" src="https://github.com/user-attachments/assets/f4a05573-ade3-4238-a39a-8a6e79857f8b" />
+
+
+
 
 
 
