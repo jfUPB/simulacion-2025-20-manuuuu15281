@@ -82,3 +82,18 @@ Me gustaría aplicar esa experimentación que sebas propone en su trabajo, el mo
 
 ### ACTIVIDAD 13
 
+**1. ¿Qué actividad o concepto de esta unidad te resultó más “revelador” para entender las fuerzas en el arte generativo?**
+
+Creo que el recurso que más me ayudó a entender el modelado de fuerzas fue el texto guía, ya que tiene muy bien explicado cada ejemplo y cada fórmula. También las líneas de código aplicando las fórmulas físicas ayudan a la comprensión del tema. 
+
+**2. ¿Hubo alguna actividad que te pareció redundante o menos efectiva para comprender el modelado de fuerzas?**
+
+Profe sinceramente considero que en esta unidad cada actividad cumplía con un objetivo muy específico y no sobra ninguna actividad por hacer. De la actividad 1-8 es un proceso de aprendizaje que nos preparó para hacer las actividades prácticas, donde terminé de interiorizar el concepto del modelado de fuerzas. 
+
+**3. ¿El paso de manipular aceleración directamente (unidad 2) a modelar fuerzas (unidad 3) te pareció una progresión natural y efectiva? ¿Por qué?**
+
+Profe me pareció que aumentamos el nivel de diseño generativo, porque antes no podía entender en qué se podía relacionar la matemática con el diseño y me ha sorprendido los patrones que podemos llegar  lograr con diferentes ecuaciones y formulas. Entonces, sin duda ver especificamente la física en el diseño hace que nos abramos a más caminos de diseño, que es precisamente lo que más me gusta del diseño generativo. 
+
+**4. ¿Cómo te ha ayudado esta unidad a ver la conexión entre conceptos físicos y expresión artística? ¿Te sientes más cómodo “jugando” con las leyes de la física en tus creaciones?**
+
+Considero ahora que la mátematica en general y la expresión artística por medio de obras generativas son muy atractivas tanto para quienes las hacen como para quienes solo las ven e interactuan con ellas. Al mismo tiempo pienso que si antes me gustaban las matemáticas ahora las considero factores elementales para lograr cosas más innovadoras o efectos más únicos. Esta unidad me hizo apreciar las diferentes manersa que podemos usar esas lógicas matemáticas en nuestras obras. 
