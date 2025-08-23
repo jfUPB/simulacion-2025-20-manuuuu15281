@@ -49,4 +49,36 @@ Me hubiese gustado poder implementar una funcionalidad de manipular los resortes
 
 ### ACTIVIDAD 12
 
+Analicé la obra de Sebas Torres. 
+
+**1. ¿La obra visual refleja la inspiración en las esculturas cinéticas de Calder y el problema de los n-cuerpos?**
+
+La pieza de sebas si refleja el problema de los N-cuerpos (los plates están vinculador por el concepto de acción-reacción lo que hace que lo que empuje a una particula empueje a la otra), pero lo que noté es que visualmente está mezclado con resortes, vientos y drag. 
+
+**2. ¿Se aplican correctamente las leyes de Newton? ¿Las fuerzas se acumulan apropiadamente?**
+
+
+En el código de sebas vi que si está aplicada la 2da ley de newton y se acumulan las fuerzas (sebas suma todo en acc y resetea en cada frame). 
+
+**3. ¿El modelado de fuerzas es interesante y genera comportamientos únicos?**
+
+Las fuerzas que modela sebas si generan comportamiento muy interesantes, precisamente porque combina varios mundos de la física lo que lo hace un diseño híbrido porque la gravedad N-cuerpos asegura cierta complejidad, los resortes + viento + drag le dan estabilidad y el rendering con estelas y glow traduce esas dinámicas en un lenguaje  mucho más artístico.
+
+**4. ¿La interacción permite explorar diferentes aspectos del sistema de fuerzas?**
+
+Si, sebas permite que las personas puedan aplicar viento, mover las particulas con el mouse, cambiar la paleta de colores y limpiar el lienzo. De todas maneras propongo que permita modificar más aspectos del sistema para hacerlo más interactivo. 
+
+**5. ¿Qué fue lo que más te llamó la atención del trabajo de tu compañero?**
+
+Lo más interesante de la obra de sebas es ver cómo pudo mezclar varios conceptos de fuerzas en una misma obra. Me parece que fue acertado en su propuesta y aunque sé que intentó referenciar a alexander calder no lo pude apreciar tanto.
+
+**6. ¿Qué aprendiste de su enfoque para modelar fuerzas?**
+
+Aprendí ese sistema híbrido que se puede plantear para tener multiples fuerzas modeladas funcionando al mismo tiempo, vi que se pueden generar obras muy interesantes.
+
+**7. ¿Qué técnica o idea de su implementación te gustaría aplicar en tus futuros proyectos?**
+
+Me gustaría aplicar esa experimentación que sebas propone en su trabajo, el modela las fuerzas hasta donde conviene y seguidamente le da autonomía a su obra. 
+
+### ACTIVIDAD 13
 
