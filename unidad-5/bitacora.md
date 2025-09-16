@@ -340,3 +340,32 @@ function mousePressed() {
 
 ### Ejemplo 4.5: Particle System with Inheritance and Polymorphism.
 
+
+**¿Cómo se está gestionando la creación y la desaparción de las partículas?**
+
+Para este ejemplo, si bien funciona de una manera muy similar a los ejemplos anteriores, en este caso cambia un poco porque le añaden una nueva clase que hereda de particle: confetti. Así que al agregar esta clase se añaden unas funcionalidades más. 
+
+Para la creación de las particulas, en cada draw() se llama emitter.addParticle() y este método hace un tipo de coin flip que da como resultado la creación de una instancia: new Particle o new Confetti. La particula o confetti que nace lleva por determinado la posición del emisor, una velocidad aleatoria, una aceleración en 0 y un alpha en 255. Continua creandose una particula por frame y corre a 60 FPS. 
+
+El emitter.run() recorre el array constantemente y lo limpia de las particulas ya "muertas", que está determinado por el valor del lifespan, mientras el p.run() se encarga de aplicar todas las fuerzas, resetear la aceleración y disminuir la esperanza de vida en 2. Por último, el método show() dibuja la particula con el alpha indicado por el lifespan, en este caso si es particle se dibuja un circulo pero si es confetti se sobrescribe el show() y dibuja un cuadrado que  rota (el resto del ciclo de vida del confetti es el mismo que el de particle). 
+
+
+**¿cómo se gestiona la memoria en esta simulación?**
+
+Se gestiona de la misma manera que los ejemplos anteriores, el ciclo de vida de cada tipo de particula + Garbage collector. Al emitter.run() detectar la particula con su lifespan < 0  la saca del arreglo y elimina su referencia, al quedar esa particula sin referencias el GC libera su espacio en memoria automáticamente.
+
+Para este ejemplo decidí implemnetar un lepcolor() que aprendimos en la unidad 2. Si bien quería implementar un Motion 101 el código ya lo estaba implementando así que no sabía cómo volverlo a integrar. 
+
+
+Esta modificación es muy breve y no interviene en nada de la gestión de creación y desaparición de los diferentes tipos de particulas, solo interviene el color en la creación de particulas utilizando lepcolor. 
+
+[Link para ver el código modificado](https://editor.p5js.org/manuuuu15281/sketches/ZQ5Ulq6mg)
+
+Apliqué una interpolación de color usando lepColor() y  se aplica al momento de nacimiento de cada partícula. Donde lerpColor(a, b, t) mezcla dos colores a y b usando un factor t entre 0 y 1 (0 = todo a, 1 = todo b). Practicamente es como mover un “slider” entre dos colores.
+
+AQUÍ VOY:
+
+
+<img width="796" height="304" alt="image" src="https://github.com/user-attachments/assets/f45ea5dc-5aa2-47af-978e-5a7a84d90a05" />
+
+
