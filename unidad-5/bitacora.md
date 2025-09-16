@@ -162,3 +162,180 @@ class Particle {
 ```
 
 ### Ejemplo 4.4: System of systems
+
+
+**¿Cómo se está gestionando la creación y la desaparción de las partículas?**
+
+Para este ejemplo, las particulas se crean en los emisores que se colocan al dar clic con el mouse (la posición en la que se crea la particula está ligada a la posición de cada emiter que se crea), en este ejemplo como en el anterior se crea una particula por frame en cada emitter y con un alpha inicial de 255 que disminuyendo en 2 cada frame, cuando finalmente el alpha < 0 un bucle elimina esa particula del array (también se recorre de atrás para delante). 
+
+**¿cómo se gestiona la memoria en esta simulación?**
+
+Este ejemplo como el anterior utiliza el Garbage Collector (GC) de Java. Este código se limita a crear objetos (las particulas) y soltar sus referencias a tiempo para que el GC los recicle. En el emitter.run(), al eliminar la referencia del array, si nadie más apunta a esa Particle, el GC puede recolectarla y se libera en la memoria. 
+
+
+En este código quise modelar la resistencia al agua de las particulas al entrar en contacto con este fluido simulado en la parte de abajo del canva. 
+
+[Link para ver el código modificado](https://editor.p5js.org/manuuuu15281/sketches/pWWebUnG4)
+
+En este sistema, cada vez que haces clic se crea un “emisor” y, en cada fotograma, cada emisor añade una partícula nueva en su punto de origen. Si las partículas entran en la zona azul de “agua”, sienten una resistencia que las frena; además, su “vida” (el Alpha) se disminuye en 2 en cada frame. Cuando esa vida llega a cero, la partícula se considera “muerta” y la quitamos del arreglo de partículas recorriéndolo de atrás hacia adelante para no saltarnos ninguna. Así, el efecto visual se mantiene fluido: nacen, se mueven, se van desvaneciendo y, al final, desaparecen limpiamente.
+
+Apliqué el concepto de resistencia de fluido: en la parte baja del canvas marqué una zona de “agua” y, cuando una partícula entra allí, se le agrega una fuerza de freno en dirección contraria a su movimiento. Esa fuerza crece cuanto más rápido va la partícula, así que en el agua se desacelera y se mueve con pasos más cortos, como en la vida real. Lo implementé detectando si la **Y** de la partícula está por debajo del borde del agua, en caso de que sí, calculamos el vector opuesto a su velocidad, le damos una magnitud según c * v^2 (donde c es el coeficiente del agua) y lo sumamos a sus fuerzas. El resto no cambia: la gravedad sigue actuando, la partícula se actualiza y se dibuja igual, y su vida se va agotando hasta desaparecer del arreglo.
+
+<img width="791" height="292" alt="image" src="https://github.com/user-attachments/assets/f23afb68-2999-47ef-bdbf-6fa188e41815" />
+
+**emitter.js**
+
+
+```js
+// The Nature of Code
+// Daniel Shiffman
+// http://natureofcode.com
+
+class Emitter {
+  constructor(x, y) {
+    this.origin = createVector(x, y);
+    this.particles = [];
+  }
+
+  addParticle() {
+    this.particles.push(new Particle(this.origin.x, this.origin.y));
+  }
+
+  // Ahora recibe el entorno para pasarlo a cada partícula
+  run(gravity, waterTop, waterC) {
+    // Looping backwards to delete in-place
+    for (let i = this.particles.length - 1; i >= 0; i--) {
+      this.particles[i].run(gravity, waterTop, waterC);
+      if (this.particles[i].isDead()) {
+        this.particles.splice(i, 1);
+      }
+    }
+  }
+}
+
+
+```
+
+**particle.js**
+
+
+```js
+// The Nature of Code
+// Daniel Shiffman
+// http://natureofcode.com
+
+// Simple Particle System
+
+class Particle {
+  constructor(x, y) {
+    this.position = createVector(x, y);
+    this.acceleration = createVector(0, 0);
+    this.velocity = createVector(random(-1, 1), random(-1, 0));
+    this.lifespan = 255.0;
+  }
+
+  // Recibe gravedad, borde superior del agua y coeficiente de drag
+  run(gravity, waterTop, waterC) {
+    // Fuerzas
+    this.applyForce(gravity);
+
+    // Si está dentro del agua, aplicar resistencia de fluido (drag cuadrático)
+    if (this.position.y >= waterTop) {
+      this.applyFluidDrag(waterC);
+    }
+
+    this.update();
+    this.show();
+  }
+
+  applyForce(force) {
+    this.acceleration.add(force);
+  }
+
+  // Resistencia de fluido: Fd = -c * |v|^2 * v̂
+  applyFluidDrag(c) {
+    const speed = this.velocity.mag();
+    if (speed === 0) return;
+
+    const dragMag = c * speed * speed; // proporcional a v^2
+    const drag = this.velocity.copy().mult(-1);
+    drag.normalize();
+    drag.mult(dragMag);
+
+    this.applyForce(drag);
+  }
+
+  // Integración
+  update() {
+    this.velocity.add(this.acceleration);
+    this.position.add(this.velocity);
+    this.lifespan -= 2;
+    this.acceleration.mult(0);
+  }
+
+  // Dibujo
+  show() {
+    stroke(0, this.lifespan);
+    strokeWeight(2);
+    fill(127, this.lifespan);
+    circle(this.position.x, this.position.y, 8);
+  }
+
+  // Vida útil
+  isDead() {
+    return this.lifespan < 0.0;
+  }
+}
+
+
+```
+
+**Sketch.js**
+
+
+```js
+// The Nature of Code
+// Daniel Shiffman
+// http://natureofcode.com
+
+// Particles are generated each cycle through draw(),
+// fall with gravity and fade out over time
+
+let emitters = [];
+
+// Entorno
+let GRAVITY;                 // vector de gravedad (reutilizado para no generar basura)
+let WATER_TOP;               // y donde empieza el agua (se recalcula por si cambia el canvas)
+const WATER_HEIGHT_FRAC = 0.35; // % de alto ocupado por el “agua” al fondo
+const WATER_C = 0.15;        // coeficiente de drag del agua (ajusta la resistencia)
+
+function setup() {
+  createCanvas(640, 240);
+  createP("Click para añadir emisores. Zona inferior = agua con resistencia.");
+  GRAVITY = createVector(0, 0.05);
+}
+
+function draw() {
+  background(255);
+
+  // Calcular y dibujar el “agua”
+  WATER_TOP = height * (1 - WATER_HEIGHT_FRAC);
+  noStroke();
+  fill(100, 150, 255, 60);
+  rect(0, WATER_TOP, width, height - WATER_TOP);
+
+  // Actualizar emisores
+  for (let emitter of emitters) {
+    emitter.run(GRAVITY, WATER_TOP, WATER_C);
+    emitter.addParticle();
+  }
+}
+
+function mousePressed() {
+  emitters.push(new Emitter(mouseX, mouseY));
+}
+
+
+```
+
+
