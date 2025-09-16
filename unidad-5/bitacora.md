@@ -338,4 +338,5 @@ function mousePressed() {
 
 ```
 
+### Ejemplo 4.5: Particle System with Inheritance and Polymorphism.
 
