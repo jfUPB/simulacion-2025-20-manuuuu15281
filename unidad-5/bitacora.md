@@ -363,9 +363,24 @@ Esta modificación es muy breve y no interviene en nada de la gestión de creaci
 
 Apliqué una interpolación de color usando lepColor() y  se aplica al momento de nacimiento de cada partícula. Donde lerpColor(a, b, t) mezcla dos colores a y b usando un factor t entre 0 y 1 (0 = todo a, 1 = todo b). Practicamente es como mover un “slider” entre dos colores.
 
-AQUÍ VOY:
-
+El emisor calcula un número que sube y baja suavemente (con una onda “sinusoidal”) y, con ese número, mezcla los dos colores para obtener un tono en ese instante. Cada partícula nace con ese color ya mezclado y lo conserva toda su vida; lo único que cambia después es su transparencia, que se va volviendo más baja hasta desaparecer. Así, el chorro completo va cambiando de color con el tiempo, pero cada partícula mantiene su tono mientras se va apagando.
 
 <img width="796" height="304" alt="image" src="https://github.com/user-attachments/assets/f45ea5dc-5aa2-47af-978e-5a7a84d90a05" />
+
+**emitter.js**
+
+
+
+**particle.js**
+
+
+**confetti.js**
+
+
+**sketch.js**
+
+
+
+
 
 
