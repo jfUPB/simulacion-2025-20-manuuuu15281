@@ -707,4 +707,18 @@ function mousePressed() {
 ```
 
 
-### Ejemplo 4.5:
+### Ejemplo 4.7: Particle System with a Repeller.
+
+La novedad en este ejemplo es la implementación del repeller. De resto las particulas se generan y desaparecen de la misma manera que todos los ejemplos anteriores. 
+
+Para modificar este código decidí que quería hacer que el repeller se mueva con velocidad angular usando coordenadas polares. 
+
+
+[Link para acceder al código modificado](https://editor.p5js.org/manuuuu15281/sketches/vPs-YqSFU)
+
+
+
+
+
+
+
