@@ -369,18 +369,342 @@ El emisor calcula un número que sube y baja suavemente (con una onda “sinusoi
 
 **emitter.js**
 
+```js
+// The Nature of Code
+// Daniel Shiffman
+// http://natureofcode.com
+
+class Emitter {
+  constructor(x, y, cA, cB) {
+    this.origin = createVector(x, y);
+    this.particles = [];
+    this.cA = cA; // color inicio
+    this.cB = cB; // color fin
+    this.t = 0;   // tiempo para variar el lerp
+  }
+
+  addParticle() {
+    // Factor suave y oscilante para el gradiente
+    const amt = (sin(this.t) + 1) / 2; // 0..1
+    const col = lerpColor(this.cA, this.cB, amt);
+    this.t += 0.03;
+
+    let r = random(1);
+    if (r < 0.5) {
+      this.particles.push(new Particle(this.origin.x, this.origin.y, col));
+    } else {
+      this.particles.push(new Confetti(this.origin.x, this.origin.y, col));
+    }
+  }
+
+  run() {
+    for (let i = this.particles.length - 1; i >= 0; i--) {
+      let p = this.particles[i];
+      p.run();
+      if (p.isDead()) {
+        this.particles.splice(i, 1);
+      }
+    }
+  }
+}
+
+```
 
 
 **particle.js**
 
+```js
+// The Nature of Code
+// Daniel Shiffman
+// http://natureofcode.com
+
+// Simple Particle System
+
+class Particle {
+  constructor(x, y, col) {
+    this.position = createVector(x, y);
+    this.acceleration = createVector(0, 0);
+    this.velocity = createVector(random(-1, 1), random(-1, 0));
+    this.lifespan = 255.0;
+    this.col = col || color(127); // color asignado al nacer (desde lerpColor)
+  }
+
+  run() {
+    let gravity = createVector(0, 0.05);
+    this.applyForce(gravity);
+    this.update();
+    this.show();
+  }
+
+  applyForce(force) {
+    this.acceleration.add(force);
+  }
+
+  update() {
+    this.velocity.add(this.acceleration);
+    this.position.add(this.velocity);
+    this.lifespan -= 2;
+    this.acceleration.mult(0);
+  }
+
+  show() {
+    // Usar el color asignado con alpha según lifespan
+    const c = color(this.col);
+    c.setAlpha(this.lifespan);
+
+    stroke(c);
+    strokeWeight(2);
+    fill(c);
+    circle(this.position.x, this.position.y, 8);
+  }
+
+  isDead() {
+    return this.lifespan < 0.0;
+  }
+}
+
+```
 
 **confetti.js**
+
+```js
+// The Nature of Code
+// Daniel Shiffman
+// http://natureofcode.com
+
+// Child class constructor
+class Confetti extends Particle {
+  // Override the show method
+  show() {
+    let angle = map(this.position.x, 0, width, 0, TWO_PI * 2);
+
+    rectMode(CENTER);
+
+    // Usar el mismo color heredado con alpha por lifespan
+    const c = color(this.col);
+    c.setAlpha(this.lifespan);
+
+    stroke(c);
+    strokeWeight(2);
+    fill(c);
+
+    push();
+    translate(this.position.x, this.position.y);
+    rotate(angle);
+    square(0, 0, 12);
+    pop();
+  }
+}
+
+```
+
+**sketch.js**
+
+```js
+// The Nature of Code
+// Daniel Shiffman
+// http://natureofcode.com
+
+// Particles are generated each cycle through draw(),
+// fall with gravity and fade out over time
+// A ParticleSystem object manages a variable size
+// list of particles.
+
+let emitter;
+let cStart, cEnd;
+
+function setup() {
+  createCanvas(640, 240);
+
+  // Colores base para el gradiente (puedes cambiarlos)
+  cStart = color(66, 135, 245);  // azul
+  cEnd   = color(255, 80, 120);  // rosado
+
+  emitter = new Emitter(width / 2, 20, cStart, cEnd);
+}
+
+function draw() {
+  background(255);
+  emitter.addParticle();
+  emitter.run();
+}
+
+```
+
+### Ejemplo 4.6: Particle System with Forces.
+
+Para este ejemplo las particulas se generan de la misma manera que los ejemplos anteriores: El emisor genera una particula por frame y corre a 60 FPS, cada particula se genera con la posición del emitter, una velocidad aleatoria y en este caso se les aplica una fuerza ( F= m * a) pero en el código se está dividiendo la fuerza por la masa (en este caso tiene por determinado el valor de 1 ) y luego se le suma a la aceleración la fuerza. Todavía conserva el lifespan que arranca en 255 y se le resta 2 en cada frame hasta que se desvanece del todo. Cuando el lifespan < 0 el emiiter.run() lo elimina del array eliminando su referencia, luego el Garbage collector de JavaScript libera la memoria de esa particula porque ya no está siendo referenciado. 
+
+
+En este caso quise modelar una fuerza adicional para el código: la atracción gravitacional. Implementé  un atractor que se coloca con el mouse y trae hacia el las particulas que el emitter genera. 
+
+[Link para ver el código modificado](https://editor.p5js.org/manuuuu15281/sketches/lIyI2oZvR)
+
+Para implementarlo, al hacer clic en el código se crea el attractor (attractor = createVector(mouseX, mouseY) ) y cuanto más cerca está la partícula, más fuerte la jala; cuanto más lejos, más suave. Para que no se vuelva incontrolable cuando está muy cerca la particula del attractor, limitamos la distancia mínima y máxima al calcular el jalón.
+En cada frame, tomamos la dirección desde la partícula hasta el attractor, calculamos una fuerza en esa dirección (con ayuda de “fuerza” general y la “masa” del attractor), y se la sumamos a la gravedad. Con esas fuerzas, la partícula actualiza su velocidad y posición; visualmente sigue desvaneciéndose igual que antes y, cuando su vida se agota, desaparece.
+
+<img width="844" height="575" alt="image" src="https://github.com/user-attachments/assets/ecae7145-14d1-492f-9eba-2100205598e6" />
+
+**emitter.js**
+
+```js
+// The Nature of Code
+// Daniel Shiffman
+// http://natureofcode.com
+
+class Emitter {
+  constructor(x, y) {
+    this.origin = createVector(x, y);
+    this.particles = [];
+  }
+
+  addParticle() {
+    this.particles.push(new Particle(this.origin.x, this.origin.y));
+  }
+
+  // Fuerza uniforme (ej. gravedad global)
+  applyForce(force) {
+    for (let p of this.particles) {
+      p.applyForce(force);
+    }
+  }
+
+  // Aplica atracción gravitacional hacia un punto "target"
+  // G: constante gravitacional efectiva
+  // M: "masa" del atractor
+  // minD/maxD: límites para evitar singularidades / fuerzas ridículas
+  applyAttractor(target, G = 1.0, M = 80, minD = 10, maxD = 50) {
+    if (!target) return;
+    for (let p of this.particles) {
+      // Vector desde la partícula al atractor
+      const dir = p5.Vector.sub(target, p.position);
+      let d = dir.mag();
+      // Limitar distancia para estabilidad numérica
+      d = constrain(d, minD, maxD);
+      dir.normalize();
+
+      // F = G * m * M / d^2 (dirección hacia el atractor)
+      const strength = (G * p.mass * M) / (d * d);
+      const force = p5.Vector.mult(dir, strength);
+
+      p.applyForce(force);
+    }
+  }
+
+  run() {
+    // Recorre hacia atrás para eliminar seguras
+    for (let i = this.particles.length - 1; i >= 0; i--) {
+      const p = this.particles[i];
+      p.run();
+      if (p.isDead()) {
+        this.particles.splice(i, 1);
+      }
+    }
+  }
+}
+
+```
+
+
+**particle.js**
+
+```js
+// The Nature of Code
+// Daniel Shiffman
+// http://natureofcode.com
+
+// Simple Particle System
+
+class Particle {
+  constructor(x, y) {
+    this.position = createVector(x, y);
+    this.acceleration = createVector(0, 0.0);
+    this.velocity = createVector(random(-1, 1), random(-2, 0));
+    this.lifespan = 255.0;
+    this.mass = 1; // Puedes variar (p.ej. random(0.5, 2)) si quieres diversidad
+  }
+
+  run() {
+    this.update();
+    this.show();
+  }
+
+  applyForce(force) {
+    // a = F / m
+    const f = force.copy().div(this.mass);
+    this.acceleration.add(f);
+  }
+
+  update() {
+    this.velocity.add(this.acceleration);
+    this.position.add(this.velocity);
+    this.acceleration.mult(0);
+    this.lifespan -= 2.0;
+  }
+
+  show() {
+    stroke(0, this.lifespan);
+    strokeWeight(2);
+    fill(127, this.lifespan);
+    circle(this.position.x, this.position.y, 8);
+  }
+
+  isDead() {
+    return this.lifespan < 0.0;
+  }
+}
+
+```
 
 
 **sketch.js**
 
+```js
+// The Nature of Code
+// Daniel Shiffman
+// http://natureofcode.com
+
+let emitter;
+let attractor = null;          // Se define al hacer clic
+const G = 1.2;                 // Constante gravitacional efectiva (ajústala)
+const ATTRACTOR_MASS = 500;     // "Masa" del atractor (ajústala)
+
+function setup() {
+  createCanvas(1280, 480);
+  emitter = new Emitter(width / 2, 50);
+}
+
+function draw() {
+  background(255, 30);
+
+  // Gravedad vertical uniforme
+  const gravity = createVector(0, 0.1);
+  emitter.applyForce(gravity);
+
+  // Aplica atracción si ya hay atractor
+  if (attractor) {
+    emitter.applyAttractor(attractor, G, ATTRACTOR_MASS);
+
+    // Dibujo del atractor (marcador visual)
+    noStroke();
+    fill(0, 120);
+    circle(attractor.x, attractor.y, 16);
+
+    noFill();
+    stroke(0, 60);
+    circle(attractor.x, attractor.y, 80); // aro de referencia opcional
+  }
+
+  emitter.addParticle();
+  emitter.run();
+}
+
+// Cada clic fija/actualiza la posición del atractor
+function mousePressed() {
+  attractor = createVector(mouseX, mouseY);
+}
+
+```
 
 
-
-
-
+### Ejemplo 4.5:
