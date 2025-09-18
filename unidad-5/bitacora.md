@@ -965,18 +965,14 @@ Al mismo tiempo, implementaré un atractor que también se movera con velocidad 
 
 [Clic para acceder al link de mi obra](https://editor.p5js.org/manuuuu15281/sketches/vEqBCZkMT)
 
+<img width="639" height="240" alt="image" src="https://github.com/user-attachments/assets/db69c9a8-2739-4488-b01d-dd8dde56183f" />
+
 **emitter.js**
 
 ```js
 // The Emitter manages all the particles.
 class Emitter {
-  /**
-   * @param {number} cx Centro X de la órbita local del emitter
-   * @param {number} cy Centro Y de la órbita local del emitter
-   * @param {number} radius Radio de la órbita local (px)
-   * @param {number} thetaStart Ángulo inicial (rad)
-   * @param {object} options { centerSpeed, omega }
-   */
+
   constructor(cx, cy, radius = 50, thetaStart = 0, options = {}) {
     // Centro móvil + velocidad constante (dirección aleatoria)
     this.center = createVector(cx, cy);
@@ -1122,21 +1118,7 @@ class Emitter {
 
 ```js
 class Repeller {
-  /**
-   * @param {number} cx Centro X de la órbita local
-   * @param {number} cy Centro Y de la órbita local
-   * @param {number} radius Radio de la órbita local (en px)
-   * @param {number} thetaStart Ángulo inicial (radianes)
-   * @param {object} options {
-   *   centerSpeed, omega,
-   *   power,              // G*M efectivo del atractor
-   *   visualR,
-   *   brushWeight, brushAlpha,
-   *   levyProb, levyAlpha, levyMin, levyMax,
-   *   softenMin, softenMax,
-   *   mode                // "attractor" | "painter"
-   * }
-   */
+ 
   constructor(cx, cy, radius = 60, thetaStart = 0, options = {}) {
     this.center = createVector(cx, cy);
     const speed = options.centerSpeed ?? 2.0;
@@ -1318,8 +1300,6 @@ class Repeller {
 **particle.js**
 
 ```js
-// The Nature of Code
-// Sistema simple de partículas con herencia y polimorfismo
 
 class Particle {
   constructor(x, y, col) {
@@ -1590,7 +1570,21 @@ function collides(p1, r1, p2, r2) {
 
 ```
 
-<img width="639" height="240" alt="image" src="https://github.com/user-attachments/assets/db69c9a8-2739-4488-b01d-dd8dde56183f" />
+
+## NOTA PROPUESTA
+Mi nota para esta unidad 5 es de **4.7**
+
+1. Investigación y Experimentación (Evidencia en Actividad 2)
+   - Para este punto de la rúbrica cumplí con lo pedido, tal vez en los últimos ejemplos no fui tan específica cómo en los primeros. En mi defensa es porque fue muy repetitivo pero considerando que al final no fui tan detallada para explicar la relación entre los manejos de la memoria y el rendimiento del programa mi nota para esta parte es de 4.7
+     
+2. Intención y Diseño (Proceso de Actividad 3)
+   - Si hice mi proceso de diseño cómo lo sugirió el profe en la unidad, primero boceté lo que me imaginaba (un lienzo rebelde en una constante guerra entre el pencil y el erraser) y a raíz de eso trabajé en mi apply. Toda la evidencia está en la bitácora. 5.0
+     
+3. Aplicación Técnica (Código de Actividad 3)
+   - En este requisito me quedó faltando crear archivos aparte para la subclase triangle.js y square.js porque por algún motivo no me estaba leyendo mis archivos .js así que me tocó por la última crear las subclases dentro del mismo archivo de particle.js. El código funciona muy bien y se cumple con el objetivo de usar polimorfismo y herencia pero no está organizado cómo debería ser. Mi nota para este apartado es 4.4
+
+4. Calidad de la Obra Final (Artefacto Entregado)
+   - Parala entrega de mi obra incluí cada tipo de concepto que se nos pedía, al mismo tiempo no tiene tanta interacción cómo quisiera. Mi nota para este apartado es de 4.7
 
 
 
