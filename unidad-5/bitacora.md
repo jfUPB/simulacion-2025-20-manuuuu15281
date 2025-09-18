@@ -713,8 +713,257 @@ La novedad en este ejemplo es la implementación del repeller. De resto las part
 
 Para modificar este código decidí que quería hacer que el repeller se mueva con velocidad angular usando coordenadas polares. 
 
-
 [Link para acceder al código modificado](https://editor.p5js.org/manuuuu15281/sketches/vPs-YqSFU)
+
+Apliqué dos ideas sencillas de movimiento: traslación constante y rotación con coordenadas polares. Primero, al repeller le di una velocidad fija para su “centro” y lo hago rebotar en los bordes, así recorre todo el canvas sin quedarse en un solo lugar. Segundo, sobre ese centro del repeller, calculo su posición real con una órbita polar: x = cx + r·cos(θ) y y = cy + r·sin(θ), aumentando θ a ritmo constante (ω) para que gire suavemente. Para poder ver la rotación, dibujo una raya interna desde el centro de la bolita hasta el borde y así muestra hacia dónde se está orientado en cada momento.
+
+<img width="783" height="299" alt="image" src="https://github.com/user-attachments/assets/c0cd5152-89a0-49bd-bdc0-541ae5ad5bfe" />
+
+**repeller.js**
+
+```js
+class Repeller {
+  /**
+   * @param {number} cx Centro X de la órbita local
+   * @param {number} cy Centro Y de la órbita local
+   * @param {number} radius Radio de la órbita local (en px)
+   * @param {number} thetaStart Ángulo inicial (radianes)
+   * @param {object} options { centerSpeed, omega, power, visualR }
+   */
+  constructor(cx, cy, radius = 60, thetaStart = 0, options = {}) {
+    this.center = createVector(cx, cy); // centro que se moverá por el canvas
+    const speed = options.centerSpeed ?? 2.0;
+
+    // Velocidad constante del centro (dirección aleatoria inicial)
+    this.centerVel = p5.Vector.fromAngle(random(TWO_PI)).setMag(speed);
+
+    this.radius = radius;              // radio de la órbita local
+    this.theta = thetaStart;           // ángulo polar para el giro local
+    this.omega = options.omega ?? 0.05;// velocidad angular constante
+    this.power = options.power ?? 150; // fuerza de repulsión
+    this.visualR = options.visualR ?? 16; // radio visual de la bolita
+
+    // Posición inicial del repeller (centro + órbita polar)
+    const x0 = this.center.x + this.radius * cos(this.theta);
+    const y0 = this.center.y + this.radius * sin(this.theta);
+    this.position = createVector(x0, y0);
+  }
+
+  update() {
+    // 1) Mover el centro con velocidad constante y rebotar en bordes
+    this.center.add(this.centerVel);
+
+    // Margen para que NI el giro (radius) NI la bolita visual salgan del canvas
+    const margin = this.radius + this.visualR;
+
+    if (this.center.x < margin || this.center.x > width - margin) {
+      this.centerVel.x *= -1;
+      // Clamp suave para evitar quedar pegado al borde
+      this.center.x = constrain(this.center.x, margin, width - margin);
+    }
+    if (this.center.y < margin || this.center.y > height - margin) {
+      this.centerVel.y *= -1;
+      this.center.y = constrain(this.center.y, margin, height - margin);
+    }
+
+    // 2) Rotación local con coordenadas polares
+    this.theta += this.omega;
+
+    // Posición final del repeller = centro móvil + órbita polar
+    const x = this.center.x + this.radius * cos(this.theta);
+    const y = this.center.y + this.radius * sin(this.theta);
+    this.position.set(x, y);
+  }
+
+  show() {
+    // Círculo del repeller
+    stroke(0);
+    strokeWeight(2);
+    fill(127);
+    circle(this.position.x, this.position.y, this.visualR * 2);
+
+    // Raya interna que marca el radio (usa el mismo ángulo theta para visualizar la rotación)
+    const endX = this.position.x + this.visualR * cos(this.theta);
+    const endY = this.position.y + this.visualR * sin(this.theta);
+    line(this.position.x, this.position.y, endX, endY);
+  }
+
+  repel(particle) {
+    // Fuerza de repulsión tipo inversa al cuadrado de la distancia
+    let force = p5.Vector.sub(this.position, particle.position);
+    let distance = force.mag();
+    distance = constrain(distance, 5, 50);
+    const strength = (-1 * this.power) / (distance * distance);
+    force.setMag(strength);
+    return force;
+  }
+}
+
+```
+
+**particle.js**
+
+```js
+// The Nature of Code
+// Daniel Shiffman
+// http://natureofcode.com
+
+// Simple Particle System
+
+class Particle {
+  constructor(x, y) {
+    this.position = createVector(x, y);
+    this.velocity = createVector(random(-1, 1), random(-1, 0));
+    this.acceleration = createVector(0, 0);
+    this.lifespan = 255.0;
+  }
+
+  run() {
+    this.update();
+    this.show();
+  }
+
+  applyForce(f) {
+    this.acceleration.add(f);
+  }
+
+  // Method to update position
+  update() {
+    this.velocity.add(this.acceleration);
+    this.position.add(this.velocity);
+    this.lifespan -= 2;
+    this.acceleration.mult(0);
+  }
+
+  // Method to display
+  show() {
+    stroke(0, this.lifespan);
+    strokeWeight(2);
+    fill(127, this.lifespan);
+    circle(this.position.x, this.position.y, 8);
+  }
+
+  // Is the particle still useful?
+  isDead() {
+    return this.lifespan < 0.0;
+  }
+}
+
+```
+
+**sketch.js**
+
+```js
+// One ParticleSystem
+let emitter;
+// Repeller que ahora se desplaza por todo el canvas y gira
+let repeller;
+
+function setup() {
+  createCanvas(640, 240);
+  emitter = new Emitter(width / 2, 60);
+
+  // Centro inicial cerca a la parte inferior, pero ahora se moverá por todo el canvas
+  const cx = width * 0.25;
+  const cy = height * 0.75;
+
+  // Radio de la órbita local del repeller (giro alrededor de su propio centro móvil)
+  const r = min(width, height) * 0.12;
+
+  repeller = new Repeller(
+    cx,
+    cy,
+    r,
+    random(TWO_PI),
+    {
+      centerSpeed: 2.2, // px por frame (movimiento constante por el canvas)
+      omega: 0.07,      // radianes por frame (velocidad angular)
+      power: 150,       // fuerza de repulsión (igual que antes)
+      visualR: 16       // radio visual de la bolita (diámetro 32)
+    }
+  );
+}
+
+function draw() {
+  background(255);
+
+  // Nace una partícula por frame
+  emitter.addParticle();
+
+  // Gravedad global
+  const gravity = createVector(0, 0.1);
+
+  // Actualizar repeller (mueve su centro por el canvas + rota con coordenadas polares)
+  repeller.update();
+
+  // Aplicar fuerzas y correr sistema
+  emitter.applyForce(gravity);
+  emitter.applyRepeller(repeller);
+  emitter.run();
+
+  // Dibujar repeller (con la raya interna que marca su radio/orientación)
+  repeller.show();
+}
+
+```
+
+**emitter.js**
+
+```js
+// The Emitter manages all the particles.
+class Emitter {
+
+  constructor(x, y) {
+    this.origin = createVector(x, y);
+    this.particles = [];
+  }
+
+  addParticle() {
+    this.particles.push(new Particle(this.origin.x, this.origin.y));
+  }
+
+  applyForce(force) {
+    // Applying a force as a p5.Vector
+    for (let particle of this.particles) {
+      particle.applyForce(force);
+    }
+  }
+
+  applyRepeller(repeller) {
+    // Calculating a force for each Particle based on a Repeller
+    for (let particle of this.particles) {
+      const force = repeller.repel(particle);
+      particle.applyForce(force);
+    }
+  }
+
+  run() {
+    // Recorremos al revés para poder eliminar sin problemas
+    for (let i = this.particles.length - 1; i >= 0; i--) {
+      const particle = this.particles[i];
+      particle.run();
+      if (particle.isDead()) {
+        this.particles.splice(i, 1);
+      }
+    }
+  }
+}
+
+```
+
+## ACTIVIDAD  3
+
+Lo que me imaginé para mi apply mientras hacía la actividad 2 fue algo así: 
+
+<img width="1582" height="533" alt="image" src="https://github.com/user-attachments/assets/f68c4159-124e-4f44-89c3-aa27aaf10e10" />
+
+En palabras, me imaginé un emitter que genera particulas de diferentes tipos que a la vez son unos borradores, estas particulas cambian de color y forma a medida que van saliendo del emitter. El emitter se mueve con velocidad angular usando coordenadas polares generaando que las particulas salgan de manera divertida.  El color de las particulas está controlado por un lepColor() con el que se podrá interactuar eligiendo los dos colores que usará la función lepColor() para modificar los colores de las particulas.
+
+Al mismo tiempo, implementaré un atractor que también se movera con velocidad angular y además tendrá integrado un levy flight que hará que cada cierto tiempo de saltos de posición que hará más impredecible mi obra. El atractor funciona con atracción gravitacional que traerá a si las particulas que genera el emitter. 
+
+
+
+
 
 
 
