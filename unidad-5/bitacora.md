@@ -957,9 +957,640 @@ Lo que me imaginé para mi apply mientras hacía la actividad 2 fue algo así:
 
 <img width="1582" height="533" alt="image" src="https://github.com/user-attachments/assets/f68c4159-124e-4f44-89c3-aa27aaf10e10" />
 
-En palabras, me imaginé un emitter que genera particulas de diferentes tipos que a la vez son unos borradores, estas particulas cambian de color y forma a medida que van saliendo del emitter. El emitter se mueve con velocidad angular usando coordenadas polares generaando que las particulas salgan de manera divertida.  El color de las particulas está controlado por un lepColor() con el que se podrá interactuar eligiendo los dos colores que usará la función lepColor() para modificar los colores de las particulas.
+Para mi concepto me imaginé un lienzo con un pincel y un borrador poco convencional autónomos ambos, que se mueven por el canvas con un tipo de movimiento en específico. En resumen, me imaginé un lienzo atipico donde el pincel y el borrador se mueven libremente. 
+
+En palabras más tecnicas, me imaginé un emitter que genera particulas de diferentes tipos que a la vez son unos borradores, estas particulas cambian de color y forma a medida que van saliendo del emitter. El emitter se mueve con velocidad angular usando coordenadas polares generaando que las particulas salgan de manera divertida.  El color de las particulas está controlado por un lepColor() con el que se podrá interactuar eligiendo los dos colores que usará la función lepColor() para modificar los colores de las particulas.
 
 Al mismo tiempo, implementaré un atractor que también se movera con velocidad angular y además tendrá integrado un levy flight que hará que cada cierto tiempo de saltos de posición que hará más impredecible mi obra. El atractor funciona con atracción gravitacional que traerá a si las particulas que genera el emitter. 
+
+[Clic para acceder al link de mi obra](https://editor.p5js.org/manuuuu15281/sketches/vEqBCZkMT)
+
+**emitter.js**
+
+```js
+// The Emitter manages all the particles.
+class Emitter {
+  /**
+   * @param {number} cx Centro X de la órbita local del emitter
+   * @param {number} cy Centro Y de la órbita local del emitter
+   * @param {number} radius Radio de la órbita local (px)
+   * @param {number} thetaStart Ángulo inicial (rad)
+   * @param {object} options { centerSpeed, omega }
+   */
+  constructor(cx, cy, radius = 50, thetaStart = 0, options = {}) {
+    // Centro móvil + velocidad constante (dirección aleatoria)
+    this.center = createVector(cx, cy);
+    const speed = options.centerSpeed ?? 2.0;
+    this.centerVel = p5.Vector.fromAngle(random(TWO_PI)).setMag(speed);
+
+    // Órbita polar local
+    this.radius = radius;
+    this.theta = thetaStart;
+    this.omega = options.omega ?? 0.05;
+
+    // La "origin" es donde nacen las partículas: centro + órbita polar
+    const x0 = this.center.x + this.radius * cos(this.theta);
+    const y0 = this.center.y + this.radius * sin(this.theta);
+    this.origin = createVector(x0, y0);
+
+    // Radio de colisión para el origin (pequeño halo)
+    this.collisionR = 12;
+
+    // Gradiente de color (extremos) y fase de interpolación
+    this.col1 = color('#00aaff');
+    this.col2 = color('#ff00aa');
+    this.lerpPhase = 0;          // avanza en el tiempo
+    this.lerpSpeed = 0.02;       // qué tan rápido recorre el gradiente
+
+    // Tipo actual de partícula (fábrica)
+    this.shapeType = 'circle';   // 'circle' | 'square' | 'triangle'
+
+    this.particles = [];
+  }
+
+  setColors(c1, c2) {
+    this.col1 = c1;
+    this.col2 = c2;
+  }
+
+  randomizeShape() {
+    const choices = ['circle', 'square', 'triangle'];
+    this.shapeType = random(choices);
+  }
+
+  update() {
+    // 1) Traslación del centro con rebote en bordes
+    this.center.add(this.centerVel);
+
+    const margin = this.radius;
+
+    if (this.center.x < margin || this.center.x > width - margin) {
+      this.centerVel.x *= -1;
+      this.center.x = constrain(this.center.x, margin, width - margin);
+    }
+    if (this.center.y < margin || this.center.y > height - margin) {
+      this.centerVel.y *= -1;
+      this.center.y = constrain(this.center.y, margin, height - margin);
+    }
+
+    // 2) Giro local (θ) y actualización de la origin (coordenadas polares)
+    this.theta += this.omega;
+
+    const x = this.center.x + this.radius * cos(this.theta);
+    const y = this.center.y + this.radius * sin(this.theta);
+    this.origin.set(x, y);
+
+    // 3) Avance de la fase del degradé
+    this.lerpPhase += this.lerpSpeed;
+  }
+
+  addParticle() {
+    // Interpolación entre col1 y col2
+    const amt = (sin(this.lerpPhase) + 1) * 0.5; // mapea sin() a [0,1]
+    const col = lerpColor(this.col1, this.col2, amt);
+
+    // Fábrica por tipo (polimorfismo)
+    let p;
+    if (this.shapeType === 'square') {
+      p = new SquareParticle(this.origin.x, this.origin.y, col);
+    } else if (this.shapeType === 'triangle') {
+      p = new TriangleParticle(this.origin.x, this.origin.y, col);
+    } else {
+      p = new CircleParticle(this.origin.x, this.origin.y, col);
+    }
+
+    this.particles.push(p);
+  }
+
+  applyForce(force) {
+    for (let particle of this.particles) {
+      particle.applyForce(force);
+    }
+  }
+
+  // Aplica fuerzas de los repellers en modo "attractor" (gravedad)
+  applyRepellers(repArray) {
+    for (let particle of this.particles) {
+      for (const rep of repArray) {
+        if (rep.isAttractor()) {
+          const f = rep.repel(particle); // ← ahora es atracción
+          particle.applyForce(f);
+        }
+      }
+    }
+  }
+
+  // PASO 1: simular + borrar + colisiones con "painters"
+  step(g /* p5.Graphics */, colliders /* array de repellers painter */) {
+    for (let i = this.particles.length - 1; i >= 0; i--) {
+      const particle = this.particles[i];
+
+      // Integración
+      particle.simulate();
+
+      // Colisiones con repellers "painter"
+      if (colliders && colliders.length) {
+        for (const rep of colliders) {
+          if (rep && rep.mode === "painter") {
+            rep.collide(particle);
+          }
+        }
+      }
+
+      // Borrado de la tinta
+      if (g) particle.eraseOn(g);
+
+      // Vida
+      if (particle.isDead()) {
+        this.particles.splice(i, 1);
+      }
+    }
+  }
+
+  // PASO 2: render en el canvas principal
+  render() {
+    for (let i = 0; i < this.particles.length; i++) {
+      this.particles[i].show();
+    }
+  }
+}
+
+```
+
+
+**repeller.js**
+
+```js
+class Repeller {
+  /**
+   * @param {number} cx Centro X de la órbita local
+   * @param {number} cy Centro Y de la órbita local
+   * @param {number} radius Radio de la órbita local (en px)
+   * @param {number} thetaStart Ángulo inicial (radianes)
+   * @param {object} options {
+   *   centerSpeed, omega,
+   *   power,              // G*M efectivo del atractor
+   *   visualR,
+   *   brushWeight, brushAlpha,
+   *   levyProb, levyAlpha, levyMin, levyMax,
+   *   softenMin, softenMax,
+   *   mode                // "attractor" | "painter"
+   * }
+   */
+  constructor(cx, cy, radius = 60, thetaStart = 0, options = {}) {
+    this.center = createVector(cx, cy);
+    const speed = options.centerSpeed ?? 2.0;
+    this.centerVel = p5.Vector.fromAngle(random(TWO_PI)).setMag(speed);
+
+    this.radius = radius;
+    this.theta  = thetaStart;
+    this.omega  = options.omega ?? 0.05;
+
+    // Gravedad (solo usada si mode === "attractor")
+    this.power  = options.power ?? 150;
+
+    this.visualR = options.visualR ?? 16;
+
+    // Pincel (usado normalmente por los "painter")
+    this.brushWeight = options.brushWeight ?? 8;
+    this.brushAlpha  = options.brushAlpha  ?? 255;
+
+    // Lévy flight (mov. errático — aplica a ambos modos, puedes bajar la prob. si no lo quieres)
+    this.levyProb  = options.levyProb  ?? 0.012;
+    this.levyAlpha = options.levyAlpha ?? 1.5;
+    this.levyMin   = options.levyMin   ?? 12;
+    this.levyMax   = options.levyMax   ?? 180;
+
+    // Suavizado de distancia para la fuerza gravitacional
+    this.softenMin = options.softenMin ?? 5;
+    this.softenMax = options.softenMax ?? 50;
+
+    // Modo de trabajo
+    this.mode = options.mode ?? "attractor"; // "attractor" o "painter"
+
+    const x0 = this.center.x + this.radius * cos(this.theta);
+    const y0 = this.center.y + this.radius * sin(this.theta);
+    this.position = createVector(x0, y0);
+
+    this.lastPosition   = this.position.copy();
+    this._suppressPaint = false; // “levantar pincel” en salto Lévy
+  }
+
+  isAttractor() {
+    return this.mode === "attractor"; 
+  }
+
+  _levyStepLength() {
+    const u = random(1);
+    let L = this.levyMin / pow(1 - u, 1 / this.levyAlpha);
+    return constrain(L, this.levyMin, this.levyMax);
+  }
+
+  _maybeLevyJump() {
+    if (random(1) < this.levyProb) {
+      const ang = random(TWO_PI);
+      const L   = this._levyStepLength();
+      const dx  = L * cos(ang);
+      const dy  = L * sin(ang);
+
+      const margin = this.radius + this.visualR;
+      const nx = constrain(this.position.x + dx, margin, width  - margin);
+      const ny = constrain(this.position.y + dy, margin, height - margin);
+
+      this.position.set(nx, ny);
+      // Mantener pos = center + R*(cosθ, sinθ)
+      this.center.set(
+        this.position.x - this.radius * cos(this.theta),
+        this.position.y - this.radius * sin(this.theta)
+      );
+
+      this._suppressPaint = false; // no trazar el segmento del salto
+    }
+  }
+
+  update() {
+    // Traslación del centro + rebote
+    this.center.add(this.centerVel);
+    const margin = this.radius + this.visualR;
+
+    if (this.center.x < margin || this.center.x > width - margin) {
+      this.centerVel.x *= -1;
+      this.center.x = constrain(this.center.x, margin, width - margin);
+    }
+    if (this.center.y < margin || this.center.y > height - margin) {
+      this.centerVel.y *= -1;
+      this.center.y = constrain(this.center.y, margin, height - margin);
+    }
+
+    // Recordar posición previa
+    this.lastPosition.set(this.position);
+
+    // Giro local y nueva posición
+    this.theta += this.omega;
+    const x = this.center.x + this.radius * cos(this.theta);
+    const y = this.center.y + this.radius * sin(this.theta);
+    this.position.set(x, y);
+
+    // Salto Lévy opcional
+    this._maybeLevyJump();
+  }
+
+  // Dibuja el trazo negro en la capa persistente (lo usarán típicamente los "painter")
+  paint(g) {
+    if (!g) return;
+    g.push();
+    g.stroke(255, this.brushAlpha);
+    g.strokeWeight(this.brushWeight);
+    g.strokeCap(ROUND);
+    g.noFill();
+    if (!this._suppressPaint && this.lastPosition && this.position) {
+      g.line(this.lastPosition.x, this.lastPosition.y, this.position.x, this.position.y);
+    }
+    g.pop();
+    this._suppressPaint = false;
+  }
+
+  show() {
+    
+    
+    stroke(0);
+    strokeWeight(2);
+    fill(127);
+    circle(this.position.x, this.position.y, this.visualR * 2);
+    
+    
+
+    const endX = this.position.x + this.visualR * cos(this.theta);
+    const endY = this.position.y + this.visualR * sin(this.theta);
+    line(this.position.x, this.position.y, endX, endY);
+  }
+
+  // Fuerza gravitacional (solo si es atractor)
+  repel(particle) {
+    if (!this.isAttractor()) {
+      return createVector(0, 0); // sin fuerza (para painters)
+    }
+    let force = p5.Vector.sub(this.position, particle.position); // hacia el atractor
+    let distance = force.mag();
+    distance = constrain(distance, this.softenMin, this.softenMax);
+    const strength = (this.power) / (distance * distance); // + => atracción
+    force.setMag(strength);
+    return force;
+  }
+
+  // Colisión/choque con una partícula (usado por "painter" como obstáculo móvil)
+  collide(particle) {
+    const pr = particle.size * 0.5;     // radio aprox. de la partícula
+    const rr = this.visualR;            // radio del repeller visual
+    let d = p5.Vector.sub(particle.position, this.position);
+    let dist = d.mag();
+    const rSum = pr + rr;
+
+    if (dist === 0) {
+      // Evitar división por cero: crear una normal aleatoria
+      d = p5.Vector.fromAngle(random(TWO_PI));
+      dist = 0.0001;
+    }
+    if (dist < rSum) {
+      const n = d.copy().div(dist);           // normal de choque (unitaria)
+      const penetration = rSum - dist + 0.1;  // empujoncito extra para separar
+
+      // Reposicionar la partícula fuera del repeller
+      particle.position.add(p5.Vector.mult(n, penetration));
+
+      // Reflejar velocidad si se movía hacia el repeller
+      const vn = particle.velocity.dot(n);
+      if (vn < 0) {
+        const e = 0.8; // restitución (0 = inelástico, 1 = elástico)
+        // v' = v - (1+e)(v·n) n
+        const delta = (1 + e) * vn;
+        particle.velocity.sub(p5.Vector.mult(n, delta));
+        // Un poco de amortiguamiento global
+        particle.velocity.mult(0.98);
+      }
+    }
+  }
+}
+
+```
+
+
+**particle.js**
+
+```js
+// The Nature of Code
+// Sistema simple de partículas con herencia y polimorfismo
+
+class Particle {
+  constructor(x, y, col) {
+    this.position = createVector(x, y);
+    this.velocity = createVector(random(-1, 1), random(-1, 0));
+    this.acceleration = createVector(0, 0);
+    this.lifespan = 255.0;
+
+    // Color asignado al nacer (resultado de lerpColor)
+    this.baseColor = col ?? color(127);
+
+    // Tamaño base
+    this.size = 8;
+
+    // Borrador
+    this.eraseSpeedThreshSq = 0.04;   // ~0.2^2
+    this.eraseSize = this.size * 1.6; // grosor del borrador
+  }
+
+  // Simulación (integración + vida)
+  simulate() {
+    this.velocity.add(this.acceleration);
+    this.position.add(this.velocity);
+    this.lifespan -= 2;
+    this.acceleration.mult(0);
+  }
+
+  // Borrar en la capa 'g' cuando hay movimiento apreciable
+  eraseOn(g) {
+    if (!g) return;
+    if (this.velocity.magSq() < this.eraseSpeedThreshSq) return; // casi quieta → no borra
+    g.push();
+    g.erase();         // recorta en la capa (transparente)
+    g.noStroke();
+    g.circle(this.position.x, this.position.y, this.eraseSize);
+    g.noErase();
+    g.pop();
+  }
+
+  // Método polimórfico (se sobreescribe en subclases)
+  show() {
+    // Por defecto no dibuja (subclases implementan)
+  }
+
+  isDead() {
+    return this.lifespan < 0.0;
+  }
+
+  applyForce(f) {
+    this.acceleration.add(f);
+  }
+
+  // Utilidad para aplicar fill/stroke con el alfa del lifespan
+  applyStyle() {
+    const r = red(this.baseColor);
+    const g = green(this.baseColor);
+    const b = blue(this.baseColor);
+    stroke(0, this.lifespan);
+    strokeWeight(2);
+    fill(r, g, b, this.lifespan);
+  }
+}
+
+// ---- Subclases ----
+
+// Círculo
+class CircleParticle extends Particle {
+  show() {
+    this.applyStyle();
+    circle(this.position.x, this.position.y, this.size);
+  }
+}
+
+// Cuadrado
+class SquareParticle extends Particle {
+  show() {
+    this.applyStyle();
+    push();
+    rectMode(CENTER);
+    translate(this.position.x, this.position.y);
+    rotate(this.velocity.heading() * 0.25);
+    rect(0, 0, this.size, this.size);
+    pop();
+  }
+}
+
+// Triángulo
+class TriangleParticle extends Particle {
+  show() {
+    this.applyStyle();
+    const s = this.size * 1.1;
+
+    push();
+    translate(this.position.x, this.position.y);
+    rotate(this.velocity.heading());
+    beginShape();
+    vertex(+s * 0.6, 0);          // punta
+    vertex(-s * 0.5, +s * 0.4);   // base abajo
+    vertex(-s * 0.5, -s * 0.4);   // base arriba
+    endShape(CLOSE);
+    pop();
+  }
+}
+
+```
+
+
+
+**sketch.js**
+
+```js
+// One ParticleSystem
+let emitter;
+
+// Tres repellers: 1 atractor + 2 painters
+let attractor;   // modo "attractor" (gravedad)
+let painterA;    // modo "painter" (pinta + colisiona con partículas)
+let painterB;    // modo "painter" (pinta + colisiona con partículas)
+
+// UI: color pickers para el gradiente
+let pickerA, pickerB;
+
+// Capa persistente para la "pintura" de los painters
+let paintLayer;
+
+function setup() {
+  createCanvas(640, 240);
+
+  // Capa donde se pinta el trazo
+  paintLayer = createGraphics(width, height);
+  paintLayer.clear(); // transparente
+
+  // --- Emitter con centro móvil + órbita polar ---
+  const ex = width * 0.75;
+  const ey = height * 0.30;
+  const eR = min(width, height) * 0.10;
+  emitter = new Emitter(
+    ex,
+    ey,
+    eR,
+    random(TWO_PI),
+    {
+      centerSpeed: 2.0, // px/frame
+      omega: 0.05       // rad/frame
+    }
+  );
+
+  // --- Repellers ---
+  // Atractor gravitacional (no pintará)
+  const ax = width * 0.25;
+  const ay = height * 0.75;
+  const aR = min(width, height) * 0.12;
+  attractor = new Repeller(
+    ax, ay, aR, random(TWO_PI),
+    {
+      mode: "attractor",
+      centerSpeed: 5,
+      omega: 0.07,
+      power: 300,      // “masa” efectiva
+      visualR: 16,
+      brushWeight: 8,  // irrelevante si no pintamos con él
+      brushAlpha: 0,   // por si llamáramos paint accidentalmente, que no marque
+      levyProb: 0.012,
+      levyAlpha: 1.5,
+      levyMin: 12,
+      levyMax: 10
+    }
+  );
+
+  // Painter A
+  const px1 = width * 0.35;
+  const py1 = height * 0.35;
+  const pR1 = min(width, height) * 0.10;
+  painterA = new Repeller(
+    px1, py1, pR1, random(TWO_PI),
+    {
+      mode: "painter",
+      centerSpeed: 5,
+      omega: 0.06,
+      visualR: 14,
+      brushWeight: 15,
+      brushAlpha: 255,
+      // Lévy un poco más suave
+      levyProb: 0.008,
+      levyAlpha: 1.6,
+      levyMin: 10,
+      levyMax: 45
+    }
+  );
+
+  // Painter B
+  const px2 = width * 0.60;
+  const py2 = height * 0.65;
+  const pR2 = min(width, height) * 0.09;
+  painterB = new Repeller(
+    px2, py2, pR2, random(TWO_PI),
+    {
+      mode: "painter",
+      centerSpeed: 2.0,
+      omega: 0.05,
+      visualR: 12,
+      brushWeight: 15,
+      brushAlpha: 255,
+      levyProb: 0.010,
+      levyAlpha: 1.5,
+      levyMin: 12,
+      levyMax: 40
+    }
+  );
+
+  // --- UI de colores ---
+  pickerA = createColorPicker('#00aaff');
+  pickerA.position(10, 10);
+  pickerA.size(40, 20);
+
+  pickerB = createColorPicker('#ff00aa');
+  pickerB.position(60, 10);
+  pickerB.size(40, 20);
+}
+
+function draw() {
+  background(0);
+
+  // Actualizar trayectorias
+  emitter.update();
+  attractor.update();
+  painterA.update();
+  painterB.update();
+
+  // 1) Pintar los PAINTERS en la capa persistente
+  painterA.paint(paintLayer);
+  painterB.paint(paintLayer);
+
+  // Colores del emitter
+  emitter.setColors(pickerA.color(), pickerB.color());
+
+  // Colisión del origin del emitter con el atractor (puedes ampliar a painters si quieres)
+  if (collides(emitter.origin, emitter.collisionR, attractor.position, attractor.visualR)) {
+    emitter.randomizeShape();
+  }
+
+  // Nace una partícula por frame
+  emitter.addParticle();
+
+  // Fuerzas globales
+  const gravity = createVector(0, 0.1);
+  emitter.applyForce(gravity);
+
+  // Atracción gravitacional SOLO del "attractor"
+  emitter.applyRepellers([attractor]);
+
+  // 2) Simular partículas + BORRAR tinta + Colisiones con painters
+  emitter.step(paintLayer, [painterA, painterB]);
+
+  // 3) Dibujar capa y luego partículas, para que se vean encima
+  image(paintLayer, 0, 0);
+  emitter.render();
+
+  // UI de los 3 repellers
+  attractor.show();
+  /*painterA.show();
+  painterB.show();*/
+}
+
+function collides(p1, r1, p2, r2) {
+  return p5.Vector.dist(p1, p2) <= (r1 + r2);
+}
+
+```
+
+<img width="639" height="240" alt="image" src="https://github.com/user-attachments/assets/db69c9a8-2739-4488-b01d-dd8dde56183f" />
 
 
 
