@@ -66,7 +66,54 @@ Los parámetros clave que percibí:
 
 Decidí modificar la resoulción, el maxspeed, el maxforce y la cantidad de particulas que se generan. 
 
-Primero lo hice sin modificar el maxforce, solo los demás parámetros mencionados y obtuve unos vehicles mucho más grandes por colocar la resolución = 9, también aumenté la cantidad de agentes de 120 a 320 y el maxSpeed lo cambié de ms a 10. Y se ve de la siguiente manera 
+Primero lo hice sin modificar el maxforce, solo los demás parámetros mencionados y obtuve unos vehicles mucho más grandes por colocar la resolución = 9, también aumenté la cantidad de agentes de 120 a 320 y el maxSpeed lo cambié de ms a 10. Y se ve de la siguiente manera:
+
+https://github.com/user-attachments/assets/5adf518b-3904-4035-afe4-a4edaf0ae506
+
+Pude observar como cambio la cantidad de vehicles generados (son muchos más ahora), también cambió la velocidad con la que se mueven los agentes el resolution cambió el tamaño de los agentes. 
+
+Luego, en otro intento modifiqué además de los que ya mencioné anteriormente el maxForce y lo coloqué en 0, lo que ocurrió es que no hubo movimiento en el canvas, los vehicles se quedaron estáticos. La siguiente imagén lo muestra:
 
 <img width="814" height="306" alt="image" src="https://github.com/user-attachments/assets/add187e6-5a80-4974-a4c2-f25294dee382" />
+
+Los tramos de código que modifiqué son los siguientes: 
+
+**En la clase vehicle.js**
+
+```js
+class Vehicle {
+  constructor(x, y, ms, mf) {
+    this.position = createVector(x, y);
+    this.acceleration = createVector(0, 0);
+    this.velocity = createVector(0, 0);
+    this.r = 9; //Modificado
+    this.maxspeed = 10; //Modificado
+    this.maxforce = 0;//Modificado
+  }
+```
+
+**En el sketch.js**
+
+```js
+function setup() {
+  let text = createP(
+    "Hit space bar to toggle debugging lines.<br>Click the mouse to generate a new flow field."
+  );
+
+  createCanvas(640, 240);
+  flowfield = new FlowField(20);
+  // Modificado 
+  for (let i = 0; i < 320; i++) {
+    vehicles.push(
+      new Vehicle(random(width), random(height), random(2, 5), random(0.1, 0.5))
+    );
+  }
+}
+```
+
+### ACTIVIDAD 4
+
+
+
+
 
