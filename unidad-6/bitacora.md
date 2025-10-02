@@ -1,4 +1,4 @@
-![GIF Simulation 2](https://github.com/user-attachments/assets/dcda3f06-18a3-4671-8368-0267ae5b46eb)# Evidencias de la unidad 6
+# Evidencias de la unidad 6
 
 ### ACTIVIDAD 1
 
@@ -866,3 +866,4 @@ function windowResized() {
 En esta unidad considero que me merezco un sólido 5 :)
 
 ¿La razón? Me gustó mucho lo que logré, sé que si hubiese sacado más tiempito pudo haber quedado mejor pero de todas formas traté de meterme con interacciones muy innovadoras y pues el resultado visual me gustó mucho. Además, modificar visuales en tiempo real es muy emocionante, escuchar la música y escribir la partitura sin duda ha sido una muy buena experiencia. Me gusta mucho experimentar con este tipo de cosas. 
+
