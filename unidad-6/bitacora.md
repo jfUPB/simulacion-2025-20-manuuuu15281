@@ -186,7 +186,10 @@ Mi idea principal era más bien clara y casi toda se llevó a cabo:
 - Quería incluir la presencia de imágenes así que utilicé de referencia un evento de orbitas sonoras del planetario donde el Vj tenia la pantalla fragmentada y la imagen la distorcionaba de diferentes maneras logrando efectos visuales muy cool. Así que me atreví a intentar algo similar, logré hacer algo con una imagen subida previamente pero me parecio funcional porque si hubiese tenido más tiempito para trabajarle a esto lo que hubiese hecho es tener una reserva de imagenes previamente guardadas para usar en diferentes momentos de la canción.
 - Para elegir el tema musical hice una experimentación sonora donde elegí una canción que me gustara su composición y colorimetría. En esa busqueda me topé con "Slow Bloom" de EMBRZ que fue el tema que finalmente decidí interpretar.
 - Por último, implementé la parametrización de muchos elementos visuales que se pudieran manejar por medio de sliders, botones, teclas y por supuesto reconocimiento de imagenes con ayuda de algoritmos entrenados en teachable machine.
-- También algo super importante que añadí es un CRONOMETRO que me ayuda a estar pendiente del tiempo de la canción y me ayuda a seguir la partitura al pie de la letra. 
+- También algo super importante que añadí es un CRONOMETRO que me ayuda a estar pendiente del tiempo de la canción y me ayuda a seguir la partitura al pie de la letra.
+
+
+[Link para acceder al código](https://editor.p5js.org/manuuuu15281/sketches/hxJStkRnnF)
 
 https://github.com/user-attachments/assets/44dc01c6-c70e-40e5-bc5a-5e880837c9e2
 
@@ -857,3 +860,9 @@ function windowResized() {
   initGridDelays();
 }
 ```
+
+### AUTOEVALUCACIÓN
+
+En esta unidad considero que me merezco un sólido 5 :)
+
+¿La razón? Me gustó mucho lo que logré, sé que si hubiese sacado más tiempito pudo haber quedado mejor pero de todas formas traté de meterme con interacciones muy innovadoras y pues el resultado visual me gustó mucho. Además, modificar visuales en tiempo real es muy emocionante, escuchar la música y escribir la partitura sin duda ha sido una muy buena experiencia. Me gusta mucho experimentar con este tipo de cosas. 
