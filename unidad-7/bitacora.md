@@ -27,3 +27,10 @@ Estas ideas se me ocurrieron mirando cosas a mi alrededor, esta parte me pareci√
 <img width="853" height="505" alt="image" src="https://github.com/user-attachments/assets/6145038a-b47c-4dd9-81c3-123b2f040903" />
 
 
+### ACTIVIDAD 2
+
+**Experimimento n√∫mero 1:**
+
+
+
+
