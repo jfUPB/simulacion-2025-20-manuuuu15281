@@ -23,4 +23,7 @@ Para este ejemplo, me llama mucho la atención cómo utilizan las formas de las 
 
 **MIS IDEAS CON PROYECCIÓN AL APPLY :)**
 
+Estas ideas se me ocurrieron mirando cosas a mi alrededor, esta parte me pareció la más divertida. 
+<img width="853" height="505" alt="image" src="https://github.com/user-attachments/assets/6145038a-b47c-4dd9-81c3-123b2f040903" />
+
 
