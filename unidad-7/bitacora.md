@@ -375,3 +375,5 @@ function spawnDust(x, y, widthSpan) {
 
 ![Apply_U7](https://github.com/user-attachments/assets/fe8d2aca-e3fd-4203-984d-abc82c1a0a2d)
 
+mi nota propuesta es 5.0
+Porque apliqué los conceptos que aprendimos en la unidad ( la librería matters.js) y además traté de pensar muy bien cuál palabra hacer que fuera innovadora, también completé todas las actividades y en la actividad 2 experimenté con diferentes físicas y aplicarlas a los cuerpos que tengo dn mi canvas. Me gustó mucho esta unidad, fue muy divertido
