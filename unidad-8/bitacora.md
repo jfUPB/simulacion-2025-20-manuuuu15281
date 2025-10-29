@@ -39,7 +39,7 @@ Para este proyecto utilizamos la física integrada al movimientos de nuestras fo
 
 ## ACTIVIDAD 3
 
-Para hacer nuestro APPLY hicimos una asociación entre Sebas Torres y Manu Buriticá, con el objetivo de utilizar un nuevo programa que desconociamos llamado TouchDesigner pero que definitivamente con el que queriamos experimentar. 
+Para hacer nuestro APPLY hicimos una asociación entre Sebas Torres y Manu Buriticá, con el objetivo de utilizar un nuevo programa que desconociamos llamado TouchDesigner pero con el que definitivamente queriamos experimentar. 
 
 Para empezar hicimos un proceso de ideación en cuanto  a los efectos que queríamos hacer para llegar al concepto visual que creamos en conjunto.
 
@@ -51,3 +51,4 @@ Seguido a esto, empezamos a ver documentación y tutoriales acerca de visuales A
 
 
 ## AUTOEVALUCIÓN
+
