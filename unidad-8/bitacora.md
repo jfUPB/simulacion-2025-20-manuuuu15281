@@ -33,12 +33,12 @@ Por último, considero que la sensación "Liveness" genera muchas expectativas, 
 - Modelo MediaPipe de visión artificial, decidimos integrarlo para darle más dinámica al papel de VJ, estamos convencidos de que esta técnica puede ser muy revolucionaria y decidimos utilizarla en conjunto de la materia de simulación para hacer esa convergencia entre ambas materias, que a nuestro parecer se complementan muy bien.
 
 
-<img width="1128" height="362" alt="image" src="https://github.com/user-attachments/assets/aeaf2725-d276-43d7-a8d4-eb127ab91453" />
-
-
 **4. ¿Qué algoritmos o técnicas planeas usar (ej: flow fields, flocking, física, partículas, etc.) y por qué?**
 
 Para este proyecto utilizamos la física integrada al movimientos de nuestras formas y elementos de los visuales y además un sistema de particulas para representar esos hechizos/conjuros que serán el resultado del aquelarre, nos parece perfecto este efecto de "particulas flotantes" para dar esa sensación de MAGIA y fantasia. 
+
+<img width="1128" height="362" alt="image" src="https://github.com/user-attachments/assets/18712e28-b1be-4585-8962-3a789708142e" />
+
 
 ## ACTIVIDAD 3
 
@@ -54,5 +54,6 @@ Seguido a esto, empezamos a ver documentación y tutoriales acerca de visuales A
 
 
 ## AUTOEVALUCIÓN
+
 
 
