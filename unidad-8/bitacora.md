@@ -50,10 +50,12 @@ Luego, empezamos nuestro proceso de experimentación/replicación de tutoriales 
 
 Seguido a esto, empezamos a ver documentación y tutoriales acerca de visuales Audioreactivos que nos ayudarian luego para implementarlo en nuestro modelo, finalmente lo hicimos y pasamos al modelo MediaPipe que era importante para nosotros con el fin de agregar interactividad a este proyecto. 
 
-**Grabación de toque en tiempo real**
+**Captura de pantalla**
 
+<img width="752" height="715" alt="image" src="https://github.com/user-attachments/assets/79fd76f6-be33-4f97-a2f0-8850e7b571ac" />
 
 ## AUTOEVALUCIÓN
 
 
+Nota: 5. Consideramos que nos merecemos un cinco porque con Sebas trabajamos en tiempo record para lograr este resultado, hicimos un trabajo de exploración y además aprendimos mucho sobre el programa que estamos usando en este proceso de creación. Así cómo también integramos un modelo de visión artificial para tener una interacción más dinámica.
 
